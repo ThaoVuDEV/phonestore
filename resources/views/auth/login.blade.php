@@ -83,7 +83,7 @@
 						<div class="col-lg-3">
 							<div class="brand_logo">
 								<a class="brand_link" href="index.html">
-									<img src="assets/images/logo/logo_27_1x.png" srcset="assets/images/logo/logo_27_2x.png 2x" alt="logo_not_found">
+									<img src="{{asset('assets/images/logo/logo_27_1x.png')}}" srcset="assets/images/logo/logo_27_2x.png 2x" alt="logo_not_found">
 								</a>
 
 								<ul class="mh_action_btns ul_li clearfix">
@@ -155,7 +155,7 @@
 
 			<!-- register_section - start
 			================================================== -->
-			<section class="register_section sec_ptb_140 has_overlay parallaxie clearfix" data-background="assets/images/backgrounds/bg_22.jpg">
+			<section class="register_section sec_ptb_140 has_overlay parallaxie clearfix" data-background="assets/images/backgrounds/bg_35.jpg">
 				<div class="overlay" data-bg-color="rgba(55, 55, 55, 0.75)"></div>
 				<div class="container">
 					<div class="reg_form_wrap login_form" data-background="assets/images/reg_bg_01.png">

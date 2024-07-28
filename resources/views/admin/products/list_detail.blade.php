@@ -7,19 +7,25 @@
         <p class="text-xl pb-3 flex items-center">
             <i class="fas fa-list mr-3"></i> List Products Iphone
         </p>
+        <!-- Form Tìm Kiếm -->
+        <div class="mb-4">
+            <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-l-lg">
+        </div>
         <div class="bg-white overflow-auto">
-            <table class="text-left w-full border-collapse">
-                <!--Border collapse doesn't work on this site yet but it's available in newer tailwind versions -->
+            <table id="products-table" class="text-left w-full border-collapse">
                 <thead>
                     <tr>
                         <th
                             class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">
-                            STT</th>
-
+                            ID</th>
+                        <th
+                            class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">
+                            PRODUCT</th>
                         <th
                             class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">
                             NAME</th>
-                            <th
+                        <th
                             class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">
                             PRICE</th>
                         <th
@@ -27,39 +33,73 @@
                             STOCK</th>
                         <th
                             class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">
-                            PRODUCT</th>
-                        <th
-                            class="py-4 px-6 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">
-                            ACTION</th>
-
+                            IMAGE</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="hover:bg-grey-lighter">
-                        <td class="py-4 px-6 border-b border-grey-light">1</td>
-                        <td class="py-4 px-6 border-b border-grey-light">IPHONE 15</td>
-                        <td class="py-4 px-6 border-b border-grey-light">10000000</td>
-                        <td class="py-4 px-6 border-b border-grey-light"> 10</td>
-                        <td class="py-4 px-6 border-b border-grey-light">IPHONE</td>
-                        <td class="py-4 px-6 border-b border-gray-200">
-                            <button type="button"
-                                class="inline-block text-indigo-600 hover:bg-red-900 hover:text-white focus:outline-none delete-btn bg-transparent border border-red-500 rounded-full px-3 py-1 "
-                                onclick="confirm('Bạn có chắc xóa không?')">
-                                <a href="#" class="text-indigo-600 hover:text-white">Xóa</a>
-                            </button>
-                            <button
-                                class="inline-block text-indigo-600 hover:bg-yellow-500 hover:text-white focus:outline-none delete-btn bg-transparent border border-yellow-500 rounded-full px-3 py-1 ml-2">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900">Sửa</a>
-                            </button>
-                            <button
-                                class="inline-block text-indigo-600 hover:bg-blue-500 hover:text-white focus:outline-none delete-btn bg-transparent border border-yellow-500 rounded-full px-3 py-1 ml-2">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900">Xem chi tiết</a>
-                            </button>
-                        </td>
-                    </tr>
-                 
+                    @foreach ($productDetail as $index => $item)
+                        <tr class="hover:bg-grey-lighter">
+                            <td class="py-4 px-6 border-b border-grey-light">{{ $item->id }}</td>
+                            <td class="py-4 px-6 border-b border-grey-light">{{ $item->product_name }}</td>
+                            <td class="py-4 px-6 border-b border-grey-light">{{ $item->name }}</td>
+                            <td class="py-4 px-6 border-b border-grey-light">{{ $item->price }}</td>
+                            <td class="py-4 px-6 border-b border-grey-light">{{ $item->stock }}</td>
+                            <td class="py-4 px-6 border-b border-grey-light">
+                                @php
+                                    $images = json_decode($item->image, true) ?? [];
+                                @endphp
+                                <div class="relative">
+                                    <div class="overflow-hidden" style="width: 200px;">
+                                        @if (!empty($images) && is_array($images))
+                                            <div class="flex transition-transform duration-300" id="image-slider-{{ $index }}" style="width: {{ count($images) * 100 }}%;">
+                                                @foreach ($images as $image)
+                                                    <img src="{{ asset('storage/uploads/' . basename($image)) }}" alt="Hình ảnh sản phẩm" class="w-32 h-auto mx-2">
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <p>Không có hình ảnh để hiển thị.</p>
+                                        @endif
+                                    </div>
+                                    @if (count($images) > 2)
+                                        <button
+                                            class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-r"
+                                            onclick="slide(-1, {{ $index }})">
+                                            &lt;
+                                        </button>
+                                        <button
+                                            class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-l"
+                                            onclick="slide(1, {{ $index }})">
+                                            &gt;
+                                        </button>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
+
+    <script>
+        function slide(direction, index) {
+            const slider = document.getElementById('image-slider-' + index);
+            const images = slider.children;
+            const totalImages = images.length;
+            const imageWidth = images[0].clientWidth;
+            const maxIndex = totalImages - 2;
+
+            slider.index = slider.index || 0;
+            slider.index += direction;
+
+            if (slider.index < 0) {
+                slider.index = maxIndex;
+            } else if (slider.index > maxIndex) {
+                slider.index = 0;
+            }
+
+            const offset = -slider.index * (imageWidth + 16); // Adjust for image width and margin
+            slider.style.transform = `translateX(${offset}px)`;
+        }
+    </script>
 @endsection

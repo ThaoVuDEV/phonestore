@@ -12,24 +12,18 @@ class Product extends Model
     protected $fillable = [
         'name',
         'description',
-        'price',
-        'stock',
         'category_id',
     ];
 
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
+   
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class, 'product_id');
+    }
+    
     public function category()
     {
-        return $this->belongsTo(Category::class);
-    }
-
-    public function variants()
-    {
-        return $this->hasMany(ProductVariant::class);
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
     public function getTotalValue()

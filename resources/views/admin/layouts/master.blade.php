@@ -5,7 +5,7 @@
 
     <aside class="relative bg-sidebar h-screen w-64 hidden sm:block shadow-xl">
         <div class="p-6">
-            <a href="index.html" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">Admin</a>
+            <a href="{{route('dashboard.index')}}" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">Admin</a>
         </div>
       @include('admin.component.navbar')
     </aside>

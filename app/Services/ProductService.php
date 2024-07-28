@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 namespace App\Services;
@@ -36,6 +36,14 @@ class ProductService
 
     public function getProductById($id)
     {
-        return $this->productRepo->find($id);
+        return $this->productRepo->productGetById($id);
+    }
+    public function paginateProducts($perPage = 10, $columns = ['*'], $searchTerm = null)
+    {
+        return $this->productRepo->paginate($perPage, $columns, $searchTerm);
+    }
+    public function ProTrash()
+    {
+        return $this->productRepo->onlyTrashed();
     }
 }

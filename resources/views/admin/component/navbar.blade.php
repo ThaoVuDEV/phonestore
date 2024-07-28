@@ -7,11 +7,11 @@
         <i class="fas fa-th-list mr-3"></i>
         Category
     </a>
-    <a href="tables.html" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+    <a href="{{route('products.index')}}" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
         <i class="fas fa-box-open mr-3"></i>
         Products
     </a>
-    <a href="forms.html" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+    <a href="{{route('attributes.index')}}" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
         <i class="fas fa-cogs mr-3"></i>
         Attributes
     </a>

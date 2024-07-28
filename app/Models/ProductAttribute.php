@@ -19,4 +19,14 @@ class ProductAttribute extends Model
     {
         return $this->hasMany(ProductVariantAttribute::class);
     }
+     // Quan hệ hasMany với ProductAttributeDetail
+    
+     public function productAttributeDetails()
+    {
+        return $this->hasMany(ProductAttributeDetail::class, 'product_attribute_id');
+    }
+    public function productAttribute()
+    {
+        return $this->belongsTo(ProductAttribute::class);
+    }
 }

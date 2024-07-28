@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->decimal('price', 20, 2);
-            $table->integer('stock');
+            $table->integer('stock')->default(0); // Thêm giá trị mặc định là 0
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
