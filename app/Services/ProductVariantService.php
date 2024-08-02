@@ -1,9 +1,11 @@
-<?php 
+<?php
 
 
 namespace App\Services;
 
+use App\Models\ProductVariant;
 use App\Repositories\ProductVariantRepository;
+use Illuminate\Support\Facades\Log;
 
 class ProductVariantService
 {
@@ -24,36 +26,21 @@ class ProductVariantService
         return $this->productVariantRepo->create($data);
     }
 
-   // ProductVariantService.php
-public function updateProductVariants($productId, $variantNames, $variantPrices, $variantQuantities, $variantImages)
-{
-    // Xóa các biến thể cũ trước khi thêm mới
-    $this->productVariantRepo->deleteByProductId($productId);
-
-    // Lưu các biến thể mới
-    foreach ($variantNames as $index => $name) {
-        $images = $variantImages[$index] ?? [];
-        $imagePaths = [];
-
-        if (is_array($images)) {
-            foreach ($images as $image) {
-                if ($image instanceof \Illuminate\Http\UploadedFile && $image->isValid()) {
-                    $fileName = uniqid() . '-' . $image->getClientOriginalName();
-                    $filePath = $image->storeAs('public/uploads', $fileName);
-                    $imagePaths[] = $filePath;
-                }
+    // ProductVariantService.php
+    public function updateProductVariant($id, array $data)
+    {
+        $variant = $this->productVariantRepo->find($id);
+        if ($variant) {
+            $updated = $variant->update($data);
+            if ($updated) {
+                Log::info('Variant updated:', $data);
+            } else {
+                Log::warning('Update failed for variant:', ['id' => $id]);
             }
+            return $variant;
         }
-
-        $this->productVariantRepo->create([
-            'product_id' => $productId,
-            'name' => $name,
-            'price' => $variantPrices[$index],
-            'stock' => $variantQuantities[$index],
-            'image' => !empty($imagePaths) ? json_encode($imagePaths) : null,
-        ]);
+        return null;
     }
-}
 
 
     public function deleteProductVariant($product)
@@ -69,7 +56,8 @@ public function updateProductVariants($productId, $variantNames, $variantPrices,
     {
         return $this->productVariantRepo->paginate($perPage, $columns);
     }
-    public function ProTrashVariant(){
+    public function ProTrashVariant()
+    {
         return $this->productVariantRepo->onlyTrashed();
     }
 }

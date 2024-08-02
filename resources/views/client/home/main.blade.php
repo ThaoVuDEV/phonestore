@@ -27,7 +27,7 @@
 
 			<!-- product_section - start
 			================================================== -->
-			@include('client.component.product_section2')
+			{{-- @include('client.component.product_section2') --}}
 			<!-- product_section - end
 			================================================== -->
 

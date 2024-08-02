@@ -12,6 +12,12 @@
             <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm..."
                 class="w-full px-4 py-2 border border-gray-300 rounded-l-lg">
         </div>
+        <div class="mt-4 gap-4">
+            <button type="submit"
+                class="inline-block text-indigo-600 hover:bg-red-600 hover:text-white focus:outline-none delete-btn bg-transparent border border-red-500 rounded-full px-3 py-1 mb-4">
+                <a href="{{ route('products.index') }}">List</a>
+            </button>
+        </div>
         <div class="bg-white overflow-auto">
             <table id="products-table" class="text-left w-full border-collapse">
                 <thead>
@@ -48,32 +54,38 @@
                                 @php
                                     $images = json_decode($item->image, true) ?? [];
                                 @endphp
-                                <div class="relative">
-                                    <div class="overflow-hidden" style="width: 200px;">
+                                <div class="relative w-32">
+                                    <div class="overflow-hidden" style="width: 150px;">
                                         @if (!empty($images) && is_array($images))
                                             <div class="flex transition-transform duration-300" id="image-slider-{{ $index }}" style="width: {{ count($images) * 100 }}%;">
                                                 @foreach ($images as $image)
-                                                    <img src="{{ asset('storage/uploads/' . basename($image)) }}" alt="Hình ảnh sản phẩm" class="w-32 h-auto mx-2">
+                                                    <img src="{{ asset('storage/uploads/' . basename($image)) }}" alt="Hình ảnh sản phẩm" class="w-32 h-32 mx-2 gap-2">
                                                 @endforeach
                                             </div>
                                         @else
                                             <p>Không có hình ảnh để hiển thị.</p>
                                         @endif
                                     </div>
-                                    @if (count($images) > 2)
-                                        <button
-                                            class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-r"
-                                            onclick="slide(-1, {{ $index }})">
-                                            &lt;
-                                        </button>
-                                        <button
-                                            class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-l"
-                                            onclick="slide(1, {{ $index }})">
-                                            &gt;
-                                        </button>
+                                    @if (count($images) > 0)
+                                        <div class="absolute inset-y-0 left-0 flex items-center" style="margin-left: -40px;"> <!-- Thêm khoảng cách margin -->
+                                            <button
+                                                class="bg-gray-800 text-white p-2 rounded-r"
+                                                onclick="slide(-1, {{ $index }})">
+                                                &lt;
+                                            </button>
+                                        </div>
+                                        <div class="absolute inset-y-0 right-0 flex items-center" style="margin-right: -40px;"> <!-- Thêm khoảng cách margin -->
+                                            <button
+                                                class="bg-gray-800 text-white p-2 rounded-l"
+                                                onclick="slide(1, {{ $index }})">
+                                                &gt;
+                                            </button>
+                                        </div>
                                     @endif
                                 </div>
                             </td>
+                            
+
                         </tr>
                     @endforeach
                 </tbody>
@@ -87,7 +99,7 @@
             const images = slider.children;
             const totalImages = images.length;
             const imageWidth = images[0].clientWidth;
-            const maxIndex = totalImages - 2;
+            const maxIndex = totalImages - 1;
 
             slider.index = slider.index || 0;
             slider.index += direction;

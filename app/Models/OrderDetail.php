@@ -15,6 +15,7 @@ class OrderDetail extends Model
         'quantity',
         'price',
         'subtotal',
+        'cart_id'
     ];
 
     // Quan hệ belongsTo với Order
@@ -33,5 +34,9 @@ class OrderDetail extends Model
     public function variant()
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');
+    }
+    public function cart()
+    {
+        return $this->belongsTo(Cart::class);
     }
 }

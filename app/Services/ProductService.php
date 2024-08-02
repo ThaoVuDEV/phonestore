@@ -46,4 +46,7 @@ class ProductService
     {
         return $this->productRepo->onlyTrashed();
     }
+    public function searchByNameAndCategory($name = null, $categoryId = null){
+        return $this->productRepo->searchByNameAndCategory($name, $categoryId);
+    }
 }

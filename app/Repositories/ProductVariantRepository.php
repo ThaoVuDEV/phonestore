@@ -12,11 +12,16 @@ class ProductVariantRepository
     {
         $this->productVariant = $productVariant;
     }
-
     public function all()
     {
-        return $this->productVariant->whereNull('deleted_at')->get();
+        return $this->productVariant
+            ->with(['product' => function ($query) {
+                $query->select('id', 'name'); // Chọn các trường cần thiết từ bảng products
+            }])
+            ->whereNull('deleted_at')
+            ->get(); // Thực thi truy vấn và lấy kết quả
     }
+
 
     public function create($data)
     {
@@ -66,16 +71,25 @@ class ProductVariantRepository
     public function getProductVariantById($id)
     {
         return $this->productVariant
-        ->join('products', 'product_variants.product_id', '=', 'products.id')
-        ->where('product_variants.product_id', $id)
-        ->whereNull('product_variants.deleted_at')
-        ->whereNull('products.deleted_at')
-        ->select('product_variants.*', 'products.name as product_name')
-        ->get();
+            ->join('products', 'product_variants.product_id', '=', 'products.id')
+            ->where('product_variants.id', $id)
+            ->whereNull('product_variants.deleted_at')
+            ->whereNull('products.deleted_at')
+            ->select('product_variants.*', 'products.name as product_name')
+            ->get();
     }
     // ProductVariantRepository.php
     public function deleteByProductId($productId)
     {
         return $this->productVariant->where('product_id', $productId)->delete();
+    }
+    // Phương thức mới để tìm biến thể dựa trên thuộc tính
+    public function findByAttributes($productId, $capacityId, $colorId)
+    {
+        return $this->productVariant
+            ->where('product_id', $productId)
+            ->where('capacity_id', $capacityId)
+            ->where('color_id', $colorId)
+            ->first();
     }
 }

@@ -49,6 +49,8 @@
                         </th>
                         <th class="py-3 px-6 text-left text-xs font-medium text-gray-700 uppercase border-b border-gray-200">
                             DANH MỤC
+                        </th><th class="py-3 px-6 text-left text-xs font-medium text-gray-700 uppercase border-b border-gray-200">
+                            IMAGE
                         </th>
                         <th class="py-3 px-6 text-left text-xs font-medium text-gray-700 uppercase border-b border-gray-200">
                             ACTION

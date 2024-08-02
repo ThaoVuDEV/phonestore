@@ -159,7 +159,7 @@
 				<div class="overlay" data-bg-color="rgba(55, 55, 55, 0.75)"></div>
 				<div class="container">
 					<div class="reg_form_wrap login_form" data-background="assets/images/reg_bg_01.png">
-						<form action="{{ route('login') }}" method="POST">
+						<form action="{{ route('adminLogin') }}" method="POST">
 							@csrf
 							<div class="reg_form">
 								<h2 class="form_title text-uppercase text-center">Login</h2>

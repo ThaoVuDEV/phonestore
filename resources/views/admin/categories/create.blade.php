@@ -16,7 +16,7 @@
         </div>
         <div class="bg-white overflow-auto">
             <div class="container w-3xl">
-                <form action="{{ route('category.store') }}" method="POST" class="p-4">
+                <form action="{{ route('categories.store') }}" method="POST" class="p-4">
                     @csrf
                     @method('POST')
                     

@@ -55,4 +55,5 @@ class CategoryRepository implements CategoryRepositoryInterface
         // Lấy các danh mục đã bị xóa mềm
         return $this->category->onlyTrashed()->paginate(5);
     }
+   
 }

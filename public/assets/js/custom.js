@@ -124,7 +124,9 @@
     }
     return false;
   });
+//giỏ hàng
 
+//
   $(document).ready(function () {
     $('.close_btn, .overlay').on('click', function () {
       $('.cart_sidebar').removeClass('active');

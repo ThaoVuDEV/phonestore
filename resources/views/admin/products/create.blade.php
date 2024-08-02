@@ -42,24 +42,39 @@
                             placeholder="Nhập mô tả sản phẩm"></textarea>
                     </div>
 
-                    <!-- Chọn thuộc tính -->
-                    <div id="attributes-section" class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Chọn Thuộc Tính:</label>
-                        <div id="attributes-container">
-                            <div class="flex items-center space-x-2 mb-2">
-                                <select name="attributes[]" class="p-2 border border-gray-300 rounded-md w-full">
-                                    <option value="">Chọn thuộc tính</option>
-                                    @foreach ($attributes as $attribute)
-                                        <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
-                                    @endforeach
-                                </select>
-                                <button type="button" id="add-attribute"
-                                    class="px-2 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600">+</button>
-                            </div>
+                    <!-- Ảnh đại diện -->
+                    <div class="mb-4">
+                        <label for="image" class="block text-sm font-medium text-gray-700">Ảnh đại diện:</label>
+                        <input type="file" name="image_pro" id="image" autocomplete="off"
+                            class="mt-1 p-2 border border-gray-300 rounded-md w-full">
+                    </div>
+
+                    <!-- Chọn màu sắc -->
+                    <div id="colors-section" class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Chọn Màu Sắc:</label>
+                        <div id="colors-container">
+                            @foreach ($colors as $color)
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <input type="checkbox" name="variant_colors[]" value="{{ $color->id }}"
+                                        class="color-checkbox">
+                                    <label>{{ $color->name }}</label>
+                                </div>
+                            @endforeach
                         </div>
-                        <button type="button" id="generate-variants"
-                            class="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Tạo Sản Phẩm Biến
-                            Thể</button>
+                    </div>
+
+                    <!-- Chọn dung lượng -->
+                    <div id="capacities-section" class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Chọn Dung Lượng:</label>
+                        <div id="capacities-container">
+                            @foreach ($capacities as $capacity)
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <input type="checkbox" name="variant_capacities[]" value="{{ $capacity->id }}"
+                                        class="capacity-checkbox">
+                                    <label>{{ $capacity->value }}</label>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
 
                     <!-- Thông tin biến thể -->
@@ -67,204 +82,99 @@
                         <!-- Các trường nhập liệu cho biến thể sẽ được thêm vào đây bởi JavaScript -->
                     </div>
 
-                    <button type="submit" class="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Tạo
-                        Sản Phẩm</button>
+                    <button type="submit" class="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                        Tạo Sản Phẩm
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const attributesContainer = document.getElementById('attributes-container');
-            const variantDetailsContainer = document.getElementById('variant-details');
-            const form = document.querySelector('form');
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorCheckboxes = document.querySelectorAll('.color-checkbox');
+            const capacityCheckboxes = document.querySelectorAll('.capacity-checkbox');
+            const variantDetails = document.getElementById('variant-details');
 
-            function generateVariants(selectedAttributes, data) {
-                let attributes = {};
-
-                data.forEach(item => {
-                    if (!attributes[item.product_attribute_id]) {
-                        attributes[item.product_attribute_id] = [];
-                    }
-                    attributes[item.product_attribute_id].push(item);
-                });
-
-                let sortedAttributes = selectedAttributes.map(attrId => attributes[attrId] || []);
-
-                let variants = [];
-
-                function combineAttributes(attributesList, index = 0, currentVariant = []) {
-                    if (index === attributesList.length) {
-                        variants.push({
-                            id: variants.length + 1,
-                            name: currentVariant.join(' ')
+            function generateCombinations(selectedColors, selectedCapacities) {
+                const combinations = [];
+                selectedColors.forEach(color => {
+                    selectedCapacities.forEach(capacity => {
+                        combinations.push({
+                            color,
+                            capacity
                         });
-                        return;
-                    }
-
-                    let attributeType = attributesList[index];
-                    attributeType.forEach(attr => {
-                        combineAttributes(attributesList, index + 1, [...currentVariant, attr.value]);
-                    });
-                }
-
-                combineAttributes(sortedAttributes);
-
-                return variants;
-            }
-
-            function updateAvailableAttributes() {
-                const selectedAttributes = Array.from(document.querySelectorAll('select[name="attributes[]"]'))
-                    .map(select => select.value)
-                    .filter(value => value);
-
-                Array.from(document.querySelectorAll('select[name="attributes[]"]')).forEach(select => {
-                    Array.from(select.options).forEach(option => {
-                        option.style.display = selectedAttributes.includes(option.value) && option
-                            .value ? 'none' : 'block';
                     });
                 });
+                return combinations;
             }
 
-            attributesContainer.addEventListener('change', updateAvailableAttributes);
+            function generateVariantFields() {
+                variantDetails.innerHTML = ''; // Xóa các trường biến thể trước đó
+                const selectedColors = []; // Lưu trữ các màu sắc đã chọn
+                const selectedCapacities = []; // Lưu trữ các dung lượng đã chọn
 
-            document.getElementById('add-attribute').addEventListener('click', () => {
-                const newAttributeDiv = document.createElement('div');
-                newAttributeDiv.className = 'flex items-center space-x-2 mb-2';
-
-                const newSelect = document.createElement('select');
-                newSelect.name = 'attributes[]';
-                newSelect.className = 'p-2 border border-gray-300 rounded-md w-full';
-                newSelect.innerHTML = `<option value="">Chọn thuộc tính</option>
-                                        @foreach ($attributes as $attribute)
-                                            <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
-                                        @endforeach`;
-
-                const removeButton = document.createElement('button');
-                removeButton.type = 'button';
-                removeButton.className = 'px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600';
-                removeButton.textContent = 'Xóa';
-                removeButton.addEventListener('click', () => {
-                    newAttributeDiv.remove();
-                    updateAvailableAttributes();
+                // Lấy các màu sắc đã được chọn
+                document.querySelectorAll('.color-checkbox:checked').forEach(checkbox => {
+                    selectedColors.push({
+                        id: checkbox.value,
+                        name: checkbox.nextElementSibling.textContent
+                    });
                 });
 
-                newAttributeDiv.appendChild(newSelect);
-                newAttributeDiv.appendChild(removeButton);
-
-                attributesContainer.appendChild(newAttributeDiv);
-                updateAvailableAttributes();
-            });
-
-            document.getElementById('generate-variants').addEventListener('click', () => {
-                const selectedAttributes = Array.from(document.querySelectorAll(
-                        'select[name="attributes[]"]'))
-                    .map(select => select.value)
-                    .filter(value => value);
-
-                if (selectedAttributes.length > 0) {
-                    fetch(`/admin/products/attribute-details/${selectedAttributes.join(',')}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (Array.isArray(data) && data.length > 0) {
-                                const variants = generateVariants(selectedAttributes, data);
-
-                                variantDetailsContainer.innerHTML = '';
-                                variants.forEach(variant => {
-                                    const detailDiv = document.createElement('div');
-                                    detailDiv.className = 'mb-4';
-
-                                    const label = document.createElement('label');
-                                    label.className = 'block text-sm font-medium text-gray-700';
-                                    label.textContent = `Sản Phẩm Biến Thể: ${variant.name}`;
-                                    label.name = `variant_names[${variant.name}]`;
-
-                                    const nameInput = document.createElement('input');
-                                    nameInput.type = 'hidden';
-                                    nameInput.name =
-                                        `variant_names[${variant.id}]`; // Sử dụng ID hoặc mã hóa
-                                    nameInput.value =
-                                        `${variant.name}`; // Lưu giá trị tên biến thể
-                                    nameInput.className =
-                                        'mt-1 p-2 border border-gray-300 rounded-md w-full';
-
-                                    const priceInput = document.createElement('input');
-                                    priceInput.type = 'number';
-                                    priceInput.name = `variant_prices[${variant.id}]`;
-                                    priceInput.placeholder = 'Nhập giá biến thể';
-                                    priceInput.className =
-                                        'mt-1 p-2 border border-gray-300 rounded-md w-full';
-
-                                    const quantityInput = document.createElement('input');
-                                    quantityInput.type = 'number';
-                                    quantityInput.name = `variant_quantities[${variant.id}]`;
-                                    quantityInput.placeholder = 'Nhập số lượng';
-                                    quantityInput.className =
-                                        'mt-1 p-2 border border-gray-300 rounded-md w-full';
-
-                                    const imageInput = document.createElement('input');
-                                    imageInput.type = 'file';
-                                    imageInput.name =
-                                        `variant_images[${variant.id}][]`; // Cho phép nhiều ảnh
-                                    imageInput.className =
-                                        'mt-1 p-2 border border-gray-300 rounded-md w-full';
-                                    imageInput.multiple = true; // Cho phép chọn nhiều ảnh
-
-                                    detailDiv.appendChild(nameInput);
-                                    detailDiv.appendChild(label);
-                                    detailDiv.appendChild(priceInput);
-                                    detailDiv.appendChild(quantityInput);
-                                    detailDiv.appendChild(imageInput);
-
-                                    variantDetailsContainer.appendChild(detailDiv);
-                                });
-                            } else {
-                                console.error('Dữ liệu không đúng định dạng hoặc trống');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Lỗi khi fetch:', error);
-                            alert('Đã xảy ra lỗi khi tải thông tin biến thể. Vui lòng thử lại.');
-                        });
-                } else {
-                    alert('Vui lòng chọn ít nhất một thuộc tính.');
-                }
-            });
-
-            form.addEventListener('submit', (event) => {
-                let hasValidVariant = false;
-
-                // Kiểm tra các trường dữ liệu của biến thể
-                const validVariants = [];
-                variantDetailsContainer.querySelectorAll('div.mb-4').forEach(detailDiv => {
-                    const nameInput = detailDiv.querySelector('input[name^="variant_names"]');
-                    const priceInput = detailDiv.querySelector('input[name^="variant_prices"]');
-                    const quantityInput = detailDiv.querySelector(
-                        'input[name^="variant_quantities"]');
-                    const imageInput = detailDiv.querySelector('input[name^="variant_images"]');
-
-                    // Kiểm tra nếu ít nhất một trường có dữ liệu
-                    if ((priceInput && priceInput.value) ||
-                        (quantityInput && quantityInput.value) ||
-                        (imageInput && imageInput.files.length > 0) ||
-                        (nameInput && nameInput.value)) {
-                        validVariants.push(detailDiv); // Lưu biến thể hợp lệ
-                        hasValidVariant = true;
-                    }
+                // Lấy các dung lượng đã được chọn
+                document.querySelectorAll('.capacity-checkbox:checked').forEach(checkbox => {
+                    selectedCapacities.push({
+                        id: checkbox.value,
+                        value: checkbox.nextElementSibling.textContent
+                    });
                 });
 
-                // Xóa các biến thể không hợp lệ
-                variantDetailsContainer.innerHTML = '';
-                validVariants.forEach(validVariant => {
-                    variantDetailsContainer.appendChild(validVariant);
-                });
+                console.log('Selected Colors:', selectedColors); // Kiểm tra dữ liệu đã lấy
+                console.log('Selected Capacities:', selectedCapacities); // Kiểm tra dữ liệu đã lấy
 
-                if (!hasValidVariant) {
-                    alert('Vui lòng nhập ít nhất một trường dữ liệu cho các biến thể.');
-                    event.preventDefault(); // Ngăn chặn việc gửi form nếu không có biến thể hợp lệ
-                }
+                // Tạo các biến thể dựa trên các giá trị màu sắc và dung lượng đã chọn
+                const combinations = generateCombinations(selectedColors, selectedCapacities);
+
+                combinations.forEach((combination, index) => {
+                    const variantFieldset = document.createElement('fieldset');
+                    variantFieldset.classList.add('border', 'border-gray-300', 'p-4', 'rounded-md',
+                        'space-y-2');
+
+                    // Tạo tên biến thể chỉ từ giá trị màu sắc và dung lượng
+                    const combinationName = `${combination.color.name}, ${combination.capacity.value}`;
+
+                    // Tạo chuỗi ID cho thuộc tính
+                    const combinationIds = `${combination.color.id},${combination.capacity.id}`;
+
+                    variantFieldset.innerHTML = `
+                        <legend class="text-sm font-medium text-gray-700">Biến thể: ${combinationName}</legend>
+                        <div class="space-y-2">
+                            <input type="hidden" name="variant_attributes[]" value="${combinationIds}">
+                            <input type="hidden" name="variant_color_ids[${index}]" value="${combination.color.id}">
+                            <input type="hidden" name="variant_capacity_ids[${index}]" value="${combination.capacity.id}">
+                            <input type="text" name="variant_prices[]" placeholder="Giá" class="p-2 border border-gray-300 rounded-md w-full">
+                            <input type="text" name="variant_quantities[]" placeholder="Số lượng" class="p-2 border border-gray-300 rounded-md w-full">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Hình ảnh:</label>
+                                <input type="file" name="variant_images[${index}][]" multiple class="p-2 border border-gray-300 rounded-md w-full">
+                            </div>
+                        </div>
+                    `;
+                    variantDetails.appendChild(variantFieldset);
+                });
+            }
+
+            colorCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', generateVariantFields);
             });
+
+            capacityCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', generateVariantFields);
+            });
+
+            // Tự động tạo biến thể khi trang được tải
+            generateVariantFields();
         });
     </script>
 @endsection

@@ -23,4 +23,8 @@ class UserService
     {
         return $this->userRepository->findByEmail($email);
     }
+    public function userRegister(array $data)
+    {
+        return $this->userRepository->userCreate($data);
+    }
 }

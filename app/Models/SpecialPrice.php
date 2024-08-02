@@ -15,10 +15,20 @@ class SpecialPrice extends Model
         'start_date',
         'end_date',
     ];
+    // Khai báo kiểu dữ liệu cho các trường ngày
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+    ];
 
     // Quan hệ belongsTo với Product
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function getAll()
+    {
+        return $this->with('product')->paginate(8);
     }
 }

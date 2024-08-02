@@ -24,7 +24,7 @@
         @endif
         <div class="bg-white overflow-hidden shadow-md rounded-lg">
             <div class="container mx-auto p-4">
-                <form id="edit-category-form" action="{{ route('category.update', ['id' => $category->id]) }}"
+                <form id="edit-category-form" action="{{ route('categories.update', ['id' => $category->id]) }}"
                     method="POST">
                     @csrf
                     @method('PUT')

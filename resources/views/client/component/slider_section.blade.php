@@ -9,17 +9,9 @@
                     <div class="alldepartments_dropdown show_lg collapse" id="alldepartments_dropdown">
                         <div class="card">
                             <ul class="alldepartments_menulist ul_li_block clearfix">
-                                <li><a href="#!">Top 100 Offers</a></li>
-                                <li><a href="#!">New Arrivals</a></li>
-                                <li class="has_child"><a href="#!">Computers & Laptops</a></li>
-                                <li class="has_child"><a href="#!">Cameras & Photo</a></li>
-                                <li class="has_child"><a href="#!">Smart Phones & Tablets</a></li>
-                                <li><a href="#!">Video Games & Consoles</a></li>
-                                <li class="has_child"><a href="#!">TV & Audio</a></li>
-                                <li><a href="#!">Gadgets</a></li>
-                                <li class="has_child"><a href="#!">Car Electronic & GPS</a></li>
-                                <li class="has_child"><a href="#!">Accesories</a></li>
-                                <li><a href="#!">Virtual Reality</a></li>
+                                @foreach ($categories as $item)
+                                <li><a href="{{route('getProList',['id'=>$item->id])}}">{{$item->name}}</a></li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>

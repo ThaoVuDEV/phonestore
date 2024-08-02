@@ -82,5 +82,21 @@ class ProductRepository
             ->whereNull('products.deleted_at')
             ->first(); 
     }
-     
+     public function loadProByCate(){
+
+     }
+     public function searchByNameAndCategory($name = null, $categoryId = null)
+     {
+         $query = $this->product->with('category')->whereNull('deleted_at');
+ 
+         if ($name) {
+             $query->where('name', 'like', '%' . $name . '%');
+         }
+ 
+         if ($categoryId) {
+             $query->where('category_id', $categoryId);
+         }
+ 
+         return $query->get();
+     }
 }

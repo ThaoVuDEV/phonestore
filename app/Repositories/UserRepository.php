@@ -16,4 +16,9 @@ class UserRepository
     {
         return User::where('email', $email)->first();
     }
+    public function userCreate(array $data)
+    {
+        $data['role'] = 'user'; // Đặt vai trò mặc định là 'user'
+        return User::create($data);
+    }
 }

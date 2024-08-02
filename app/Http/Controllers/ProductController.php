@@ -3,30 +3,53 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Capacity;
+use App\Models\Category;
+use App\Models\Color;
+use App\Models\FeaturedProduct;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeDetail;
 use App\Models\ProductVariant;
+use App\Models\SpecialPrice;
+use App\Services\CapacityService;
 use App\Services\CategoryService;
+use App\Services\ColorService;
 use App\Services\ProductAttributeService;
 use App\Services\ProductService;
+
 use App\Services\ProductVariantService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     protected $productService;
     protected $categoryService;
-    protected $attributeService;
-    protected $productVariantService;
+    protected $colorService;
+    protected $capacityService;
 
-    public function __construct(ProductService $productService, CategoryService $categoryService, ProductAttributeService $attributeService, ProductVariantService $productVariantService)
-    {
-        $this->productService = $productService;
+    protected $productVariantService;
+    protected $featuredProduct;
+    protected $productVariantAttributeService;
+    public function __construct(
+        ProductService $productService,
+        CategoryService $categoryService,
+        ProductVariantService $productVariantService,
+        FeaturedProduct $featuredProduct,
+        ColorService $colorService,
+        CapacityService $capacityService,
+
+    ) {
+        $this->productService        = $productService;
         $this->productVariantService = $productVariantService;
-        $this->categoryService = $categoryService;
-        $this->attributeService = $attributeService;
+        $this->categoryService       = $categoryService;
+        $this->featuredProduct       = $featuredProduct;
+        $this->colorService          = $colorService;
+        $this->capacityService       = $capacityService;
     }
+
 
     public function index(Request $request)
     {
@@ -43,44 +66,65 @@ class ProductController extends Controller
     public function create()
     {
         $categories = $this->categoryService->getAllCategories();
-        $attributes = $this->attributeService->getAllAttributes();
-        return view('admin.products.create', compact('categories', 'attributes'));
+        $colors = $this->colorService->getAllColor();
+        $capacities = $this->capacityService->getAllCapacities();
+        return view('admin.products.create', compact('categories', 'colors', 'capacities'));
     }
     public function store(Request $request)
     {
-        // Validate request
+        // Xác thực dữ liệu đầu vào
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'variant_names' => 'required|array',
+            'image_pro' => 'nullable|file|image|max:2048',
+            'variant_attributes' => 'required|array',
+            'variant_attributes.*' => 'required|string', // Mỗi phần tử của variant_attributes phải là chuỗi
             'variant_prices' => 'required|array',
+            'variant_prices.*' => 'required|numeric|min:0', // Giá phải là số và không âm
             'variant_quantities' => 'required|array',
+            'variant_quantities.*' => 'required|integer|min:0', // Số lượng phải là số nguyên không âm
             'variant_images' => 'nullable|array',
-            'variant_images.*' => 'nullable|array',
             'variant_images.*.*' => 'nullable|file|image|max:2048',
+            'variant_colors' => 'nullable|array',
+            'variant_colors.*' => 'nullable|exists:colors,id',
+            'variant_capacities' => 'nullable|array',
+            'variant_capacities.*' => 'nullable|exists:capacities,id',
         ]);
 
         // Lưu thông tin sản phẩm
         $productData = $request->only(['category_id', 'name', 'description']);
+
+        // Xử lý ảnh sản phẩm nếu có
+        if ($request->hasFile('image_pro')) {
+            $image = $request->file('image_pro');
+            $imageName = uniqid() . '-' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('public/products/', $imageName);
+            $productData['image'] = $imagePath;
+        }
+
+        // Tạo sản phẩm
         $product = $this->productService->createProduct($productData);
 
-        // Lọc và lưu thông tin biến thể
-        $variantNames = $request->input('variant_names');
-        $variantPrices = $request->input('variant_prices');
-        $variantQuantities = $request->input('variant_quantities');
+        // Xử lý biến thể
+        $variantAttributes = $request->input('variant_attributes', []);
+        $variantPrices = $request->input('variant_prices', []);
+        $variantQuantities = $request->input('variant_quantities', []);
         $variantImages = $request->file('variant_images', []);
+        $variantColors = $request->input('variant_color_ids', []);
+        $variantCapacities = $request->input('variant_capacity_ids', []);
 
-        $validVariants = [];
+        foreach ($variantAttributes as $index => $attributeString) {
+            // Phân tách các ID thuộc tính từ chuỗi
+            $attributeIds = explode(',', $attributeString);
 
-        foreach ($variantNames as $index => $name) {
             if (
                 isset($variantPrices[$index]) && !is_null($variantPrices[$index]) &&
                 isset($variantQuantities[$index]) && !is_null($variantQuantities[$index])
             ) {
+                // Xử lý ảnh biến thể nếu có
                 $images = $variantImages[$index] ?? [];
                 $imagePaths = [];
-
                 if (is_array($images)) {
                     foreach ($images as $image) {
                         if ($image instanceof \Illuminate\Http\UploadedFile && $image->isValid()) {
@@ -91,18 +135,16 @@ class ProductController extends Controller
                     }
                 }
 
-                $validVariants[] = [
+                // Tạo biến thể sản phẩm
+                $this->productVariantService->createProductVariant([
                     'product_id' => $product->id,
-                    'name' => $name,
                     'price' => $variantPrices[$index],
                     'stock' => $variantQuantities[$index],
                     'image' => !empty($imagePaths) ? json_encode($imagePaths) : null,
-                ];
+                    'color_id' => $variantColors[$index],
+                    'capacity_id' => $variantCapacities[$index],
+                ]);
             }
-        }
-
-        foreach ($validVariants as $variantData) {
-            $this->productVariantService->createProductVariant($variantData);
         }
 
         return redirect()->route('products.index')
@@ -113,65 +155,91 @@ class ProductController extends Controller
 
 
 
+
+
     public function show($id, ProductVariantService $productVariantService)
     {
 
-        $productDetail = $productVariantService->getProductVariantById($id);
+        $productDetail = $this->productVariantService->getAllProductVariants($id);
+
         return view('admin.products.list_detail', compact('productDetail'));
     }
 
 
 
 
-    public function edit(String $id)
+    public function edit($id)
     {
-        $categories = $this->categoryService->getAllCategories();
-        $attributes = $this->attributeService->getAllAttributes();
-        $product = $this->productService->getProductById($id);
+        $product = Product::with('productVariants.color', 'productVariants.capacity',)->findOrFail($id);
+        $categories = Category::all();
+        $colors = Color::all();
+        $capacities = Capacity::all();
 
-        return view('admin.products.edit', compact('categories', 'attributes', 'product'));
+        // Lấy các ID của color và capacity từ các variants của sản phẩm
+        $selectedColorIds = $product->productVariants->pluck('color_id')->unique()->toArray();
+        $selectedCapacityIds = $product->productVariants->pluck('capacity_id')->unique()->toArray();
+
+        return view('admin.products.edit', compact('product', 'categories', 'colors', 'capacities', 'selectedColorIds', 'selectedCapacityIds'));
     }
+
 
     public function update(Request $request, $id)
     {
+        // Validate input data
         $request->validate([
+            'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
+            'image_pro' => 'nullable|file|image|max:2048',
+            'variant_prices' => 'required|array',
+            'variant_prices.*' => 'required|numeric|min:0',
+            'variant_quantities' => 'required|array',
+            'variant_quantities.*' => 'required|integer|min:0',
+            'variant_images' => 'nullable|array',
+            'variant_images.*.*' => 'nullable|file|image|max:2048',
+            'variant_colors' => 'nullable|array',
+            'variant_colors.*' => 'nullable|exists:colors,id',
+            'variant_capacities' => 'nullable|array',
+            'variant_capacities.*' => 'nullable|exists:capacities,id',
             'existing_variant_ids' => 'nullable|array',
             'existing_variant_ids.*' => 'exists:product_variants,id',
-            'new_variant_ids' => 'nullable|array',
-            'new_variant_ids.*' => 'exists:product_variants,id',
-            'variant_names' => 'nullable|array',
-            'variant_prices' => 'nullable|array',
-            'variant_quantities' => 'nullable|array',
-            'variant_images' => 'nullable|array',
-            'variant_images.*' => 'nullable|array',
-            'variant_images.*.*' => 'nullable|file|image|max:2048',
         ]);
-
-        $product = Product::findOrFail($id);
 
         // Update product information
-        $product->update([
-            'name' => $request->input('name'),
-            'description' => $request->input('description'),
-            'category_id' => $request->input('category_id'),
-        ]);
+        $product = $this->productService->getProductById($id);
+        $productData = $request->only(['category_id', 'name', 'description']);
+
+        if ($request->hasFile('image_pro')) {
+            $image = $request->file('image_pro');
+            $imageName = uniqid() . '-' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('public/products/', $imageName);
+
+            // Delete old image if present
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            $productData['image'] = $imagePath;
+        }
+
+        // Update product
+        $this->productService->updateProduct($product, $productData);
+
+        // Process variant data
+        $variantPrices = $request->input('variant_prices', []);
+        $variantQuantities = $request->input('variant_quantities', []);
+        $variantImages = $request->file('variant_images', []);
+        $variantColors = $request->input('variant_colors', []);
+        $variantCapacities = $request->input('variant_capacities', []);
+        $existingVariantIds = $request->input('variant_ids', []);
 
         // Update existing variants
-        $existingVariantIds = $request->input('existing_variant_ids', []);
-        foreach ($existingVariantIds as $variantId) {
-            $variant = ProductVariant::find($variantId);
-            if ($variant) {
-                $variant->update([
-                    'name' => $request->input("variant_names.${variantId}"),
-                    'price' => $request->input("variant_prices.${variantId}"),
-                    'stock' => $request->input("variant_quantities.${variantId}"),
-                ]);
+        foreach ($existingVariantIds as $index => $variantId) {
+            $variant = $this->productVariantService->getProductVariantById($variantId);
 
-                // Handle image upload if present
-                $images = $request->file("variant_images.${variantId}", []);
+            if ($variant) {
+                // Process variant images if present
+                $images = $variantImages[$index] ?? [];
                 $imagePaths = [];
                 if (is_array($images)) {
                     foreach ($images as $image) {
@@ -181,71 +249,96 @@ class ProductController extends Controller
                             $imagePaths[] = $filePath;
                         }
                     }
-                    $variant->update(['image' => !empty($imagePaths) ? json_encode($imagePaths) : null]);
                 }
+
+                // Ensure prices and quantities are mapped correctly
+                $price = $variantPrices[$variantId] ?? $variant->price;
+                $quantity = $variantQuantities[$variantId] ?? $variant->stock;
+
+                $this->productVariantService->updateProductVariant($variantId, [
+                    'price' => $price,
+                    'stock' => $quantity,
+                    'image' => !empty($imagePaths) ? json_encode($imagePaths) : $variant->image,
+                    'color_id' => $variantColors[$index] ?? $variant->color_id,
+                    'capacity_id' => $variantCapacities[$index] ?? $variant->capacity_id,
+                ]);
             }
         }
-
-        // Add new variants
-        $newVariantIds = $request->input('new_variant_ids', []);
-        foreach ($newVariantIds as $variantId) {
-            $newVariantData = [
-                'product_id' => $product->id,
-                'name' => $request->input("variant_names.${variantId}"),
-                'price' => $request->input("variant_prices.${variantId}"),
-                'stock' => $request->input("variant_quantities.${variantId}"),
-            ];
-
-            $newVariant = ProductVariant::updateOrCreate(
-                ['id' => $variantId],
-                $newVariantData
-            );
-
-            // Handle image upload if present
-            $images = $request->file("variant_images.${variantId}", []);
-            $imagePaths = [];
-            if (is_array($images)) {
-                foreach ($images as $image) {
-                    if ($image instanceof \Illuminate\Http\UploadedFile && $image->isValid()) {
-                        $fileName = uniqid() . '-' . $image->getClientOriginalName();
-                        $filePath = $image->storeAs('public/uploads', $fileName);
-                        $imagePaths[] = $filePath;
-                    }
-                }
-                $newVariant->update(['image' => !empty($imagePaths) ? json_encode($imagePaths) : null]);
-            }
-        }
-
-        return redirect()->route('products.index')->with('success', 'Sản phẩm đã được cập nhật.');
-    }
-
-
-
-
-    public function destroy(Product $product)
-    {
-        $this->productService->deleteProduct($product);
 
         return redirect()->route('products.index')
-            ->with('success', 'Product deleted successfully.');
+            ->with('success', 'Cập nhật sản phẩm thành công');
     }
 
-    public function attributes_trash(Request $request)
+
+
+
+
+
+    public function destroy(String $id)
     {
-        $attributes = $this->productService->ProTrash();
+        $product = $this->productService->getProductById($id);
+
+        if (!$product) {
+            return redirect()->route('products.index')->with('error', 'Không tìm thấy danh mục.');
+        }
+
+        $this->productService->deleteProduct($product);
+        return redirect()->route('products.index')->with('success', 'Xóa danh mục thành công.');
+    }
+
+    public function products_trash(Request $request)
+    {
+        $products = $this->productService->ProTrash();
         $title = 'Danh sách sản phẩm đã xóa';
-        return view('admin.attributes.list', compact('attributes', 'title'));
+        return view('admin.products.list', compact('products', 'title'));
     }
-    public function getAttributeDetails($ids)
+    public function restore(string $id)
     {
-        // Tách các ID thuộc tính
-        $attributeIds = explode(',', $ids);
+        $products = Product::withTrashed()->findOrFail($id);
 
-        // Lấy tất cả các thuộc tính dựa trên ID
-        $attributes = ProductAttributeDetail::whereIn('product_attribute_id', $attributeIds)
-            ->get();
+        $products->restore();
 
-        // Trả về dữ liệu dưới dạng JSON
-        return response()->json($attributes);
+        return redirect()->route('products.index')
+            ->with('success', 'Khôi phục danh mục thành công.');
+    }
+
+    public function getFeaturedProducts($limit = 10)
+    {
+        return Product::whereHas('featured')->take($limit)->get();
+    }
+
+    public function getBestSellingProducts($limit = 10)
+    {
+        return Product::whereHas('bestSelling')->take($limit)->get();
+    }
+
+    public function listProFeatured()
+    {
+        $proFeatured = $this->featuredProduct->listFeatured(8);
+        return view('admin.products.featured.list', compact('proFeatured'));
+    }
+    public function addFeatured(Request $request)
+    {
+
+        $request->validate([
+            'product_id' => 'required|exists:products,id'
+        ]);
+
+        $data = $request->only('product_id');
+
+        $result = $this->featuredProduct->addFeaturedPro($data);
+
+
+        if (!$result) {
+            return redirect()->back()->with('error', 'thêm không thành công');
+        }
+        return redirect()->route('products.featured.index')->with('success', 'Thêm thành công.');
+    }
+    public function getVariants($productId)
+    {
+        $product = Product::findOrFail($productId);
+        $variants = $product->variants; // Thay đổi tùy thuộc vào quan hệ của bạn
+
+        return response()->json(['variants' => $variants]);
     }
 }

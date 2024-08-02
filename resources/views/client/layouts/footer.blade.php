@@ -6,7 +6,7 @@
                     <div class="footer_widget footer_about">
                         <div class="brand_logo mb_30">
                             <a href="index.html">
-                                <img src="assets/images/logo/logo_17_1x.png" srcset="assets/images/logo/logo_17_2x.png 2x" alt="logo_not_found">
+                                <img src="{{asset('assets/images/logo/logo_17_1x.png')}}" srcset="assets/images/logo/logo_17_2x.png 2x" alt="logo_not_found">
                             </a>
                         </div>
                         <p class="mb_30">
@@ -57,14 +57,14 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-12">
+                {{-- <div class="col-lg-4 col-md-12">
                     <div class="footer_widget footer_recent_post">
                         <h3 class="footer_widget_title text-white text-uppercase mb-0">Weekly Selected</h3>
                         <div class="row justify-content-lg-between">
                             <div class="col-lg-6 col-md-6">
                                 <div class="electronic_product_small">
                                     <a class="item_image" href="#!">
-                                        <img src="assets/images/shop/electronic/img_27.png" alt="image_not_found">
+                                        <img src="{{asset('assets/images/shop/electronic/img_27.png')}}" alt="image_not_found">
                                     </a>
                                     <div class="item_content">
                                         <h4 class="item_title">
@@ -76,7 +76,7 @@
 
                                 <div class="electronic_product_small">
                                     <a class="item_image" href="#!">
-                                        <img src="assets/images/shop/electronic/img_31.png" alt="image_not_found">
+                                        <img src="{{asset('assets/images/shop/electronic/img_31.png')}}" alt="image_not_found">
                                     </a>
                                     <div class="item_content">
                                         <h4 class="item_title">
@@ -88,7 +88,7 @@
 
                                 <div class="electronic_product_small">
                                     <a class="item_image" href="#!">
-                                        <img src="assets/images/shop/electronic/img_24.png" alt="image_not_found">
+                                        <img src="{{asset('assets/images/shop/electronic/img_24.png')}}" alt="image_not_found">
                                     </a>
                                     <div class="item_content">
                                         <h4 class="item_title">
@@ -102,7 +102,7 @@
                             <div class="col-lg-6 col-md-6">
                                 <div class="electronic_product_small">
                                     <a class="item_image" href="#!">
-                                        <img src="assets/images/shop/electronic/img_23.png" alt="image_not_found">
+                                        <img src="{{asset('assets/images/shop/electronic/img_23.png')}}" alt="image_not_found">
                                     </a>
                                     <div class="item_content">
                                         <h4 class="item_title">
@@ -114,7 +114,7 @@
 
                                 <div class="electronic_product_small">
                                     <a class="item_image" href="#!">
-                                        <img src="assets/images/shop/electronic/img_26.png" alt="image_not_found">
+                                        <img src="{{asset('assets/images/shop/electronic/img_26.png')}}" alt="image_not_found">
                                     </a>
                                     <div class="item_content">
                                         <h4 class="item_title">
@@ -126,7 +126,7 @@
 
                                 <div class="electronic_product_small">
                                     <a class="item_image" href="#!">
-                                        <img src="assets/images/shop/electronic/img_07.png" alt="image_not_found">
+                                        <img src="{{asset('assets/images/shop/electronic/img_07.png')}}" alt="image_not_found">
                                     </a>
                                     <div class="item_content">
                                         <h4 class="item_title">
@@ -138,7 +138,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
