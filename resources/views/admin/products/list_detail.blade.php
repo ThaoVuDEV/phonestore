@@ -44,16 +44,15 @@
                 </thead>
                 <tbody>
                     @foreach ($productDetail as $index => $item)
+                    <?php  $images = json_decode($item->image, true) ?>
                         <tr class="hover:bg-grey-lighter">
                             <td class="py-4 px-6 border-b border-grey-light">{{ $item->id }}</td>
-                            <td class="py-4 px-6 border-b border-grey-light">{{ $item->product_name }}</td>
-                            <td class="py-4 px-6 border-b border-grey-light">{{ $item->name }}</td>
+                            <td class="py-4 px-6 border-b border-grey-light">{{ $item->product->name}}</td>
+                            <td class="py-4 px-6 border-b border-grey-light">{{ $item->capacity->value }} - {{ $item->color->name }}</td>
                             <td class="py-4 px-6 border-b border-grey-light">{{ $item->price }}</td>
                             <td class="py-4 px-6 border-b border-grey-light">{{ $item->stock }}</td>
                             <td class="py-4 px-6 border-b border-grey-light">
-                                @php
-                                    $images = json_decode($item->image, true) ?? [];
-                                @endphp
+
                                 <div class="relative w-32">
                                     <div class="overflow-hidden" style="width: 150px;">
                                         @if (!empty($images) && is_array($images))

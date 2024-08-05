@@ -70,13 +70,7 @@ class ProductVariantRepository
     }
     public function getProductVariantById($id)
     {
-        return $this->productVariant
-            ->join('products', 'product_variants.product_id', '=', 'products.id')
-            ->where('product_variants.id', $id)
-            ->whereNull('product_variants.deleted_at')
-            ->whereNull('products.deleted_at')
-            ->select('product_variants.*', 'products.name as product_name')
-            ->get();
+        return $this->productVariant->find($id);
     }
     // ProductVariantRepository.php
     public function deleteByProductId($productId)

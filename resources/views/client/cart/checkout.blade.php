@@ -1,41 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-
-    <title>Neoncart</title>
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/favourite_icon_01.png') }}">
-
-    <!-- Framework - CSS include -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/bootstrap.min.css') }}">
-
-    <!-- Icon - CSS include -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/fontawesome.css') }}">
-
-    <!-- Animation - CSS include -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/animate.css') }}">
-
-    <!-- Nice Select - CSS include -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/nice-select.css') }}">
-
-    <!-- Carousel - CSS include -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/slick.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/slick-theme.css') }}">
-
-    <!-- Popup Images & Videos - CSS include -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/magnific-popup.css') }}">
-
-    <!-- JQuery UI - CSS include -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/jquery-ui.css') }}">
-
-    <!-- Custom - CSS include -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
-
-</head>
+@include('client.layouts.head')
 
 
 <body>
@@ -121,43 +87,7 @@
                         </nav>
                     </div>
 
-                    <div class="col-lg-3">
-                        <ul class="action_btns_group ul_li_right clearfix">
-                            <li>
-                                <button type="button" class="search_btn" data-toggle="collapse"
-                                    data-target="#search_body_collapse" aria-expanded="false"
-                                    aria-controls="search_body_collapse">
-                                    <i class="fal fa-search"></i>
-                                </button>
-                            </li>
-                            <li>
-                                <button type="button" class="user_btn" data-toggle="collapse"
-                                    data-target="#use_deropdown" aria-expanded="false" aria-controls="use_deropdown">
-                                    <i class="fal fa-user"></i>
-                                </button>
-                                <div id="use_deropdown" class="collapse_dropdown collapse">
-                                    <div class="dropdown_content">
-                                        <div class="profile_info clearfix">
-                                            <div class="user_thumbnail">
-                                                <img src="{{ asset('assets/images/meta/img_01.png') }}"
-                                                    alt="thumbnail_not_found">
-                                            </div>
-                                            <div class="user_content">
-                                                <h4 class="user_name">Jone Doe</h4>
-                                                <span class="user_title">Seller</span>
-                                            </div>
-                                        </div>
-                                        <ul class="settings_options ul_li_block clearfix">
-                                            <li><a href="#!"><i class="fal fa-user-circle"></i> Profile</a></li>
-                                            <li><a href="#!"><i class="fal fa-user-cog"></i> Settings</a></li>
-                                            <li><a href="#!"><i class="fal fa-sign-out-alt"></i> Logout</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-
-                        </ul>
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -303,35 +233,22 @@
                                                 <td></td>
                                                 <td>
                                                     <span class="subtotal_text">Tổng thiệt hại</span>
+                                                    <span class="subtotal_text">Giảm giá từ mã</span>
                                                 </td>
                                                 <td>
                                                     <span class="all_price">
                                                         {{ number_format($all_price, 0, ',', '.') }}₫
+                                                    </span>
+                                                    <span class="discount">
+                                                        {{ $discount }}₫
                                                     </span>
                                                 </td>
                                             </tr>
 
                                             <tr>
                                                 <td>
-                                                    <div class="form_item">
-                                                        <span class="input_title">Mã giảm giá</span>
-                                                        <div class="d-flex ">
-                                                            <input type="text" name="coupon_code" id="coupon_code"
-                                                                placeholder="Nhập mã giảm giá">
-                                                            <button type="button" id="apply_coupon"
-                                                                class="custom_btn bg_default_red">Áp dụng</button>
-                                                        </div>
-                                                        @if (session('discount'))
-                                                            <div class="alert alert-success mt-2">
-                                                                {{ session('discount') }}
-                                                            </div>
-                                                        @endif
-                                                        @if (session('discount_error'))
-                                                            <div class="alert alert-danger mt-2">
-                                                                {{ session('discount_error') }}
-                                                            </div>
-                                                        @endif
-                                                    </div>
+
+
                                                 </td>
                                                 <td></td>
                                                 <td>
@@ -367,10 +284,10 @@
                                                 <td></td>
                                                 <td>
                                                     <span class="total_all_price">
-                                                        {{ number_format($all_price, 0, ',', '.') }}₫
+                                                        {{ number_format($cart_total, 0, ',', '.') }}₫
                                                     </span>
                                                     <input type="hidden" name="total_amount"
-                                                        value="{{ $all_price }}">
+                                                        value="{{ $cart_total }}">
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -431,20 +348,26 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const shippingOptions = document.querySelectorAll('input[name="shipping_option"]');
                 const allPriceElement = document.querySelector('.all_price');
+                const discountElement = document.querySelector('.discount');
+
                 const totalAllPriceElement = document.querySelector('.total_all_price');
 
-                let allPriceText = allPriceElement.textContent.replace(/\./g, ""); // Loại bỏ dấu phân cách hàng nghìn
+                let allPriceText = allPriceElement.textContent.replace(/\./g, "");
                 allPriceText = allPriceText.replace(/[^0-9.-]+/g,
-                    ""); // Loại bỏ tất cả các ký tự không phải số và dấu phân cách thập phân
-
+                    "");
+                let discountText = discountElement.textContent.replace(/\./g, "");
+                allPriceText = allPriceText.replace(/[^0-9.-]+/g,
+                    "");
                 let allPrice = parseFloat(allPriceText);
+                let discountCode = parseFloat(discountText);
                 let shippingFee = 0;
 
                 shippingOptions.forEach(option => {
                     option.addEventListener('change', function() {
                         if (this.checked) {
                             shippingFee = parseFloat(this.dataset.fee);
-                            totalAllPriceElement.textContent = (allPrice + shippingFee).toLocaleString(
+                            totalAllPriceElement.textContent = (allPrice - discountCode +
+                                shippingFee).toLocaleString(
                                 'vi-VN', {
                                     style: 'currency',
                                     currency: 'VND'
@@ -453,7 +376,6 @@
                     });
                 });
             });
-          
         </script>
         <!-- checkout_section - end
    ================================================== -->

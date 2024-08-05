@@ -60,14 +60,14 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $user = Auth::user();
-    
+
         if ($user->role === 'admin') {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
             return redirect()->route('admin.login');
         }
-    
+
         if ($user->role === 'user') {
             Auth::logout();
             $request->session()->invalidate();
@@ -101,7 +101,7 @@ class AuthController extends Controller
     }
     public function registerUser(UserRequest $request)
     {
-       
+
         try {
             $userdata = [
                 'name' => $request->input('name'),
@@ -111,22 +111,59 @@ class AuthController extends Controller
                 'password' => Hash::make($request->input('password')),
                 'role' => 'user',
             ];
-        
+
             $this->userService->userRegister($userdata);
             return redirect()->route('user.login')->with('success', 'Đăng ký thành công');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Đăng ký thất bại! Lỗi: ' );
-
+            return redirect()->back()->with('error', 'Đăng ký thất bại! Lỗi: ');
         }
     }
     public function ProfileUser()
-    {  
+    {
         $user = Auth::user();
         if ($user->role === 'user') {
-        
-            return view('client.auth.profile',compact('user'));
+
+            return view('client.auth.profile', compact('user'));
         }
-        
-       
     }
+    public function  ProfileEdit()
+    {
+        $user = Auth::user();
+        if ($user->role === 'user') {
+
+            return view('client.auth.edit_profile', compact('user'));
+        }
+    }
+    // public function ProfileUpdate(Request $request)
+    // {
+    //     $user = Auth::user();
+    
+    //     // Validate input
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email|max:255',
+    //         'phone' => 'nullable|string|max:20',
+    //         'address' => 'nullable|string|max:255',
+    //     ]);
+    
+    //     // Prepare data for update
+    //     $updateData = [
+    //         'name' => $request->input('name'),
+    //         'email' => $request->input('email'),
+    //         'phone' => $request->input('phone'),
+    //         'address' => $request->input('address'),
+    //     ];
+    
+      
+    
+    //     try {
+    //         $user->update($updateData);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error updating user: ' . $e->getMessage());
+    //         return redirect()->back()->with('error', 'Cập nhật thất bại! Lỗi: ' . $e->getMessage());
+    //     }
+    
+    //     return redirect()->route('user.profile')->with('success', 'Cập nhật thành công');
+    // }
+    
 }

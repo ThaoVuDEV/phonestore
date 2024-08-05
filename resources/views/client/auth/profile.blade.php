@@ -1,41 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-	<head>
-
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<meta http-equiv="x-ua-compatible" content="ie=edge">
-
-		<title>Đăng nhập - Neoncart </title>
-		<link rel="shortcut icon" href="assets/images/logo/favourite_icon_01.png">
-
-		<!-- fraimwork - css include -->
-		<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-
-		<!-- icon - css include -->
-		<link rel="stylesheet" type="text/css" href="assets/css/fontawesome.css">
-
-		<!-- animation - css include -->
-		<link rel="stylesheet" type="text/css" href="assets/css/animate.css">
-
-		<!-- nice select - css include -->
-		<link rel="stylesheet" type="text/css" href="assets/css/nice-select.css">
-
-		<!-- carousel - css include -->
-		<link rel="stylesheet" type="text/css" href="assets/css/slick.css">
-		<link rel="stylesheet" type="text/css" href="assets/css/slick-theme.css">
-
-		<!-- popup images & videos - css include -->
-		<link rel="stylesheet" type="text/css" href="assets/css/magnific-popup.css">
-
-		<!-- jquery ui - css include -->
-		<link rel="stylesheet" type="text/css" href="assets/css/jquery-ui.css">
-
-		<!-- custom - css include -->
-		<link rel="stylesheet" type="text/css" href="assets/css/style.css">
-
-	</head>
+@include('client.layouts.head')
 
 
 	<body>
@@ -82,7 +48,7 @@
 					<div class="row align-items-center">
 						<div class="col-lg-3">
 							<div class="brand_logo">
-								<a class="brand_link" href="index.html">
+								<a class="brand_link" href="{{route('home')}}">
 									<img src="assets/images/logo/logo_27_1x.png" srcset="assets/images/logo/logo_27_2x.png 2x" alt="logo_not_found">
 								</a>
 
@@ -107,7 +73,7 @@
 							<nav class="main_menu clearfix">
 								<ul class="ul_li_center clearfix">
 									<li >
-										<a href="#!">Home</a>
+										<a href="{{route('home')}}">Home</a>
 										
 									</li>
 									<li >
@@ -154,21 +120,20 @@
 			<section class="register_section sec_ptb_140 has_overlay parallaxie clearfix" data-background="assets/images/backgrounds/bg_35.jpg">
 				<div class="overlay" data-bg-color="rgba(55, 55, 55, 0.75)"></div>
 				<div class="container">
-					<div class="container p-5 bg-white rounded shadow-sm">
-                        <div class="d-flex align-items-center mb-4">
-                            <!-- Avatar -->
-                            <div class="me-4">
-                                <img class="rounded-circle" src="{{asset('storage/uploads'.basename($user->image))}}" alt="User Avatar" style="width: 96px; height: 96px;">
-                            </div>
-                            <!-- User Info -->
-                            <div>
-                                <h1 class="h4 mb-1">{{$user->name}}</h1>
-                                <p class="text-muted mb-1">{{$user->email}}</p>
-                                <p class="text-muted">{{$user->phone}}</p>
-                            </div>
-                        </div>
+					<div class=" p-5 bg-white rounded shadow-sm">
                       
-                    
+						<div class="mb-4">
+                            <h2 class="h5 mb-2">Name</h2>
+							<p class="text-muted mb-0">{{ $user->name }}</p>
+                        </div>
+						<div class="mb-4">
+                            <h2 class="h5 mb-2">Email</h2>
+							<p class="text-muted mb-0">{{ $user->email }}</p>
+                        </div>
+						<div class="mb-4">
+                            <h2 class="h5 mb-2">Phone</h2>
+							<p class="text-muted mb-0">{{ $user->phone }}</p>
+                        </div>
                         <!-- Address Section -->
                         <div class="mb-4">
                             <h2 class="h5 mb-2">Address</h2>
@@ -178,7 +143,7 @@
                         <div>
                             <h2 class="h5 mb-2">Settings</h2>
                             <div class="d-flex gap-3">
-                                <a href="#" class="btn btn-primary">Edit Profile</a>
+                                <a href="{{route('ProfileEdit')}}" class="btn btn-primary">Edit Profile</a>
                                 <a href="#" class="btn btn-danger">Logout</a>
                             </div>
                         </div>

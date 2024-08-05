@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttributeController;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CapacityController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -14,8 +15,8 @@ use App\Http\Controllers\FlashDealController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SpecialPriceController;
-use App\Http\Controllers\VariantController;
 use App\Http\Middleware\LoginMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -23,11 +24,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/',                                      [HomeController::class, 'index'])->name('home');
 Route::get('/product/{id}',                          [HomeController::class, 'getProductList'])->name('getProList');
+
 Route::get('/productdetail/{id}',                    [HomeController::class, 'getProductDetail'])->name('getProDetail');
+Route::get('{id}/productdetail/',                    [HomeController::class, 'gettDetail'])->name('getProDetail1');
+
 Route::get('/categories/{id}/products',              [HomeController::class, 'getProductList'])->name('getProList');
 Route::post('/check-variant',                        [HomeController::class, 'checkVariant'])->name('check.variant');
 Route::post('/get-product-variant',                  [HomeController::class, 'getProductVariant'])->name('getProductVariant');
-Route::get('/test',                                      [HomeController::class, 'test']);
+Route::get('/test',                                  [HomeController::class, 'test']);
 
 
 Route::prefix('cart')->group(function () {
@@ -37,7 +41,7 @@ Route::prefix('cart')->group(function () {
     Route::get('/cart',                               [CartController::class, 'showCart'])->name('showCart');
     Route::get('/checkout',                           [CartController::class, 'create'])->name('checkout.form')->middleware('check.order.status');
     Route::post('/checkout',                          [CartController::class, 'checkout'])->name('checkout');
-    Route::delete('/cart/remove/{id}',                [CartController::class, 'removeFromCart'])->name('cart.remove');
+    Route::delete('/remove/{id}',                     [CartController::class, 'removeFromCart'])->name('cart.remove');
     Route::get('/cart/items',                         [CartController::class, 'getCartItems'])->name('cart.items');
 });
 Route::post('/storeOrder',                            [CartController::class, 'storeOrder'])->name('storeOrder');
@@ -104,6 +108,11 @@ Route::post('/order/ship/{id}',                       [OrderController::class, '
 Route::post('/order/complete/{id}',                   [OrderController::class, 'completeOrder'])->name('order.complete');
 //
 
+Route::resource('banners', BannerController::class);
+
+
+
+
 Route::group(['prefix' => 'admin/attributes', 'middleware' => 'admin'], function () {
     Route::resource('color', ColorContrller::class);
     Route::resource('special-prices', SpecialPriceController::class);
@@ -120,12 +129,16 @@ Route::post('admin/register',                         [AuthController::class, 'r
 Route::post('admin/signup',                           [AuthController::class, 'signup'])->name('admin.signup')->middleware(LoginMiddleware::class);
 Route::post('userlogout',                             [AuthController::class, 'logout'])->name('Userlogout');
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [AuthController::class, 'ProfileUser'])->name('ProfileUser');
+    Route::get('/profile',                            [AuthController::class, 'ProfileUser'])->name('ProfileUser');
+    
 });
-
+Route::get('/editprofile',                        [AuthController::class, 'ProfileEdit'])->name('ProfileEdit');
 
 //logclient
 Route::get('login',                                   [AuthController::class, 'userIndex'])->name('user.login');
 Route::post('userLogin',                              [AuthController::class, 'UserLogin'])->name('userLogin');
 Route::post('register',                               [AuthController::class, 'registerUser'])->name('userRegister');
 Route::get('signup',                                  [AuthController::class, 'registerForm'])->name('user.signup');
+
+//review
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');

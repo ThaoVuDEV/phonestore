@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $timezone = env('APP_TIMEZONE', 'UTC'); // Mặc định là UTC nếu không tìm thấy trong .env
+        date_default_timezone_set($timezone);
     }
 }

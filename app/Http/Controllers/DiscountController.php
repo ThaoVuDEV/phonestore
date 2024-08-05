@@ -14,10 +14,21 @@ class DiscountController extends Controller
         return view('admin.discounts.list', compact('discounts'));
     }
 
+    private function generateCouponCode($length = 8)
+    {
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $couponCode = '';
+        $charactersLength = strlen($characters);
+        for ($i = 0; $i < $length; $i++) {
+            $couponCode .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $couponCode;
+    }
     // Hiển thị trang tạo giảm giá
     public function create()
     {
-        return view('admin.discounts.create');
+        $code = $this->generateCouponCode();
+        return view('admin.discounts.create', compact('code'));
     }
 
     // Lưu giảm giá mới
@@ -71,31 +82,33 @@ class DiscountController extends Controller
     }
     public function applyCoupon(Request $request)
     {
+        // Xác thực dữ liệu đầu vào
         $request->validate([
-            'coupon_code' => 'required|string'
-        ]);
-    
-        $coupon = Discount::where('code', $request->input('coupon_code'))
-                        ->where('start_date', '<=', now())
-                        ->where('end_date', '>=', now())
-                        ->first();
-    
+            'code' => 'required|string',
+
+        ], ['code.required' => 'Vui lòng nhập mã']);
+
+        $code = $request->input("code");
+
+        $coupon = Discount::where("code", $code)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
+
         if ($coupon) {
-            // Tính toán giảm giá
-            $discount = $coupon->discount_type === 'fixed_amount'
-                        ? $coupon->value
-                        : ($coupon->value / 100) * $request->input('total_amount');
-    
-            return response()->json([
-                'success' => true,
-                'discount' => $discount,
-                'message' => 'Mã giảm giá đã được áp dụng.'
+            session()->put('coupon', [
+                'code' => $coupon->code,
+                'discount_type' => $coupon->discount_type,
+                'value' => $coupon->value,
+                'id' => $coupon->id,
             ]);
+            return redirect()->back()->with('status', 'Mã giảm giá đã được áp dụng.');
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Mã giảm giá không hợp lệ.'
-            ]);
+            session()->forget('coupon');
+
+            return redirect()->back()->with('error', 'Mã giảm giá không hợp lệ.');
         }
     }
+
+   
 }

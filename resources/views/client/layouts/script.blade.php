@@ -32,70 +32,7 @@
 
 <!-- custom - jquery include -->
 <script src="{{ asset('assets/js/custom.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const cartSidebar = document.getElementById('cart-sidebar');
-        const closeCartBtn = document.getElementById('close-cart-btn');
-        const overlay = cartSidebar.querySelector('.overlay');
 
-        // Hàm mở giỏ hàng
-        function openCartSidebar() {
-            // Gọi API để lấy dữ liệu giỏ hàng (cập nhật đường dẫn theo thực tế)
-            fetch('/cart/data')
-                .then(response => response.json())
-                .then(data => {
-                    updateCartSidebar(data);
-                    cartSidebar.style.display = 'block';
-                })
-                .catch(error => console.error('Error fetching cart data:', error));
-        }
-
-        // Hàm đóng giỏ hàng
-        function closeCartSidebar() {
-            cartSidebar.style.display = 'none';
-        }
-
-        // Thêm sự kiện cho nút mở giỏ hàng (thay đổi ID này theo nút mở giỏ hàng của bạn)
-        const openCartBtn = document.getElementById('open-cart-btn'); // Thay đổi ID nếu cần
-        if (openCartBtn) {
-            openCartBtn.addEventListener('click', openCartSidebar);
-        }
-
-        // Thêm sự kiện cho nút đóng giỏ hàng
-        if (closeCartBtn) {
-            closeCartBtn.addEventListener('click', closeCartSidebar);
-        }
-        overlay.addEventListener('click', closeCartSidebar);
-
-        // Cập nhật nội dung giỏ hàng
-        function updateCartSidebar(data) {
-            const cartItemsList = document.getElementById('cart-items-list');
-            const totalPrice = document.getElementById('total-price');
-
-            // Cập nhật danh sách các mục giỏ hàng
-            cartItemsList.innerHTML = data.items.map(item => `
-            <li>
-                <div class="item_image">
-                    <img src="${item.image}" alt="image_not_found">
-                </div>
-                <div class="item_content">
-                    <h4 class="item_title">${item.title}</h4>
-                    <span class="item_price">$${item.price}</span>
-                </div>
-                <button type="button" class="remove_btn" data-id="${item.id}"><i class="fal fa-trash-alt"></i></button>
-            </li>
-        `).join('');
-
-            // Cập nhật tổng giá
-            totalPrice.innerHTML = `
-            <li><span>Subtotal:</span><span>$${data.subtotal.toFixed(2)}</span></li>
-            <li><span>Vat 5%:</span><span>$${data.vat.toFixed(2)}</span></li>
-            <li><span>Discount 20%:</span><span>- $${data.discount.toFixed(2)}</span></li>
-            <li><span>Total:</span><span>$${(data.subtotal - data.discount + data.vat).toFixed(2)}</span></li>
-        `;
-        }
-    });
-</script>
 
 <script>
     $(document).ready(function() {
@@ -114,6 +51,7 @@
     });
 </script>
 <script>
+ 
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('[data-start-date]').forEach(function(element) {
             var startDate = new Date(element.getAttribute('data-start-date')).getTime();
@@ -145,4 +83,13 @@ element.querySelector('.seconds').textContent = seconds.toString().padStart(2, '
             updateCountdown(); // Run once immediately
         });
     });
+</script>
+<script>
+       document.addEventListener('DOMContentLoaded', function () {
+    var tabTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
+    tabTriggerList.map(function (tabTriggerEl) {
+        var tabTrigger = new bootstrap.Tab(tabTriggerEl);
+        tabTrigger.show();
+    });
+});
 </script>

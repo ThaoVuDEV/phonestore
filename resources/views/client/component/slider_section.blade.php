@@ -18,53 +18,36 @@
                 </div>
             </div>
 
-            <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-lg-10 col-md-12 col-sm-12 col-xs-12">
                 <div class="electronic_slider position-relative clearfix">
                     <div class="main_slider clearfix" data-slick='{"arrows": false}'>
-                        <div class="item clearfix" data-background="assets/images/slider/electronic/bg_01.jpg">
+                        @foreach ($banners as $item)
+                        <div class="item clearfix" data-background="{{asset('storage/banners/'.basename($item->image))}}">
+                            {{-- <div class="slider_image order-last" data-animation="fadeInUp" data-delay=".4s">
+                                <img src="{{asset('assets/images/slider/electronic/img_01.png')}}" alt="image_not_found">
+                            </div> --}}
+                            {{-- <div class="slider_content">
+                                <h3 class="text-uppercase" data-animation="fadeInUp" data-delay=".6s">{{$item->title}}</h3>
+                                <p data-animation="fadeInUp" data-delay=".8s">
+                                    Big screens in incredibly slim designs that in your hand.
+                                </p>
+                            </div> --}}
+                        </div>
+                        @endforeach
+                        {{-- <div class="item clearfix" data-background="{{asset('assets/images/slider/electronic/bg_01.jpg')}}">
                             <div class="slider_image order-last" data-animation="fadeInUp" data-delay=".4s">
-                                <img src="assets/images/slider/electronic/img_01.png" alt="image_not_found">
+                                <img src="{{asset('assets/images/slider/electronic/img_01.png')}}" alt="image_not_found">
                             </div>
                             <div class="slider_content">
                                 <h3 class="text-uppercase" data-animation="fadeInUp" data-delay=".6s">The Gift you are Wishing</h3>
                                 <p data-animation="fadeInUp" data-delay=".8s">
                                     Big screens in incredibly slim designs that in your hand.
-                                </p>
-                                <div class="abtn_wrap clearfix" data-animation="fadeInUp" data-delay="1s">
-                                    <a href="#!" class="custom_btn btn_sm btn_border border_electronic">Browse Now</a>
-                                </div>
+                                </p> 
+                                
                             </div>
-                        </div>
+                        </div> --}}
 
-                        <div class="item clearfix" data-background="assets/images/slider/electronic/bg_01.jpg">
-                            <div class="slider_image order-last" data-animation="fadeInUp" data-delay=".4s">
-                                <img src="assets/images/slider/electronic/img_01.png" alt="image_not_found">
-                            </div>
-                            <div class="slider_content">
-                                <h3 class="text-uppercase" data-animation="fadeInUp" data-delay=".6s">The Gift you are Wishing</h3>
-                                <p data-animation="fadeInUp" data-delay=".8s">
-                                    Big screens in incredibly slim designs that in your hand.
-                                </p>
-                                <div class="abtn_wrap clearfix" data-animation="fadeInUp" data-delay="1s">
-                                    <a href="#!" class="custom_btn btn_sm btn_border border_electronic">Browse Now</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="item clearfix" data-background="assets/images/slider/electronic/bg_01.jpg">
-                            <div class="slider_image order-last" data-animation="fadeInUp" data-delay=".4s">
-                                <img src="assets/images/slider/electronic/img_01.png" alt="image_not_found">
-                            </div>
-                            <div class="slider_content">
-                                <h3 class="text-uppercase" data-animation="fadeInUp" data-delay=".6s">The Gift you are Wishing</h3>
-                                <p data-animation="fadeInUp" data-delay=".8s">
-                                    Big screens in incredibly slim designs that in your hand.
-                                </p>
-                                <div class="abtn_wrap clearfix" data-animation="fadeInUp" data-delay="1s">
-                                    <a href="#!" class="custom_btn btn_sm btn_border border_electronic">Browse Now</a>
-                                </div>
-                            </div>
-                        </div>
+                       
                     </div>
 
                     <!-- slider progress -->
@@ -74,10 +57,10 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+            {{-- <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
                 <div class="advertisement_image mb_30">
                     <a href="#!">
-                        <img src="assets/images/offer/electronic/img_02.jpg" alt="image_not_found">
+                        <img src="{{asset('assets/images/offer/electronic/img_02.jpg')}}" alt="image_not_found">
                     </a>
                 </div>
                 <div class="advertisement_image">
@@ -85,7 +68,7 @@
                         <img src="assets/images/offer/electronic/img_03.jpg" alt="image_not_found">
                     </a>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
     </div>

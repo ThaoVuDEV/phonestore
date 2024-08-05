@@ -13,10 +13,19 @@ class CategoryRepository implements CategoryRepositoryInterface
         $this->category = $category;
     }
 
-    public function all()
+    public function all($parentId = null)
     {
-        // Lấy tất cả các danh mục chưa bị xóa mềm
-        return $this->category->whereNull('deleted_at')->get();
+        // Lấy tất cả các danh mục chưa bị xóa mềm và lọc theo parent_id nếu được cung cấp
+        return $this->category
+            ->whereNull('deleted_at')
+            ->when($parentId, function ($query, $parentId) {
+                // Nếu parentId được cung cấp, lọc theo parent_id
+                return $query->where('parent_id', $parentId);
+            }, function ($query) {
+                // Nếu không có parentId, lọc các danh mục mà parent_id không phải null
+                return $query->whereNotNull('parent_id');
+            })
+            ->get();
     }
 
     public function create($data)

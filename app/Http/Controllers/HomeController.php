@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Cart;
 use App\Models\DealOfTheWeek;
 use App\Models\FeaturedProduct;
@@ -9,6 +10,7 @@ use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantAttribute;
+use App\Models\Review;
 use App\Models\SpecialPrice;
 use App\Services\CapacityService;
 use App\Services\CategoryService;
@@ -55,7 +57,9 @@ class HomeController extends Controller
         $categories = $this->categoryService->getAllCategories();
         $onSaleProducts = $this->onSaleProduct->getAll();
         $dealOfTheWeek = $this->dealOfTheWeek->listDeal(5);
-      
+        $banner = new Banner();
+        $banners= $banner::all();
+        
         // Xử lý giỏ hàng
         $cartItems = [];
         if (Auth::check()) {
@@ -65,7 +69,7 @@ class HomeController extends Controller
                 ->get();
         }
 
-        return view('client.home.main', compact('categories', 'proFeatured', 'onSaleProducts', 'cartItems','dealOfTheWeek'));
+        return view('client.home.main', compact('categories', 'proFeatured', 'onSaleProducts', 'cartItems', 'dealOfTheWeek','banners'));
     }
     public function search(Request $request)
     {
@@ -78,21 +82,34 @@ class HomeController extends Controller
     }
     public function getProductList($id)
     {
-        $category = $this->categoryService->getCategoryById($id);
-        $proList = $category->products;
-        
-        return view('client.products.product', compact('category', 'proList'));
+        $proList = $this->productService->getProductByCate($id);
+        return view('client.products.product', compact('proList'));
     }
     public function getProductDetail($id)
     {
-        $proDetail = Product::with([
-            'productVariants'
-        ])->findOrFail($id);
+        $proDetail = $this->productVariant->getProductVariantById($id);
         $colors = $this->colorService->getAllColor();
         $capacities = $this->capacityService->getAllCapacities();
         $onSaleProducts = $this->onSaleProduct->getAll();
+        $RelatedPro = ProductVariant::with('product')->where('product_id', $proDetail->product->id)->get();
+        $reviews = Review::where('product_id',$proDetail->product->id)->get();
 
-        return view('client.products.product_detail', compact('proDetail', 'onSaleProducts', 'colors', 'capacities'));
+        return view('client.products.product_detail', compact('proDetail', 'onSaleProducts', 'colors', 'capacities','reviews'));
+    }
+    public function gettDetail($id)
+    {
+        $proDetail = ProductVariant::with('product')->where('product_id', $id)->first();
+
+        $colors = $this->colorService->getAllColor();
+        $capacities = $this->capacityService->getAllCapacities();
+        $onSaleProducts = $this->onSaleProduct->getAll();
+        // Lấy tất cả sản phẩm liên quan có cùng product_id với sản phẩm hiện tại
+        $relatedPro = ProductVariant::with('product')
+            ->where('product_id', $proDetail->product_id)
+            ->where('id', '!=', $proDetail->id) // Loại bỏ sản phẩm hiện tại khỏi danh sách liên quan
+            ->get();
+            $reviews = Review::where('product_id',$id)->get();
+        return view('client.products.product_detail1', compact('proDetail', 'onSaleProducts', 'colors', 'capacities', 'relatedPro','reviews'));
     }
     public function getProductVariant(Request $request)
     {
@@ -147,7 +164,8 @@ class HomeController extends Controller
             return response()->json(['error' => 'Đã xảy ra lỗi'], 500);
         }
     }
-    public function test(){
+    public function test()
+    {
         return view('client.cart.ordercompleted');
     }
 }

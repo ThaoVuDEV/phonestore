@@ -8,7 +8,7 @@
 
 
     <!-- breadcrumb_section - start
-                                                                                                                                                                                                                                   ================================================== -->
+                                                                                                                                                                                                                                       ================================================== -->
     <div class="container maxw_1600">
         <div class="f2_breadcrumb_nav_wrap mt-0 sec_ptb_50">
             <ul class="ce_breadcrumb_nav ul_li clearfix">
@@ -20,11 +20,11 @@
         </div>
     </div>
     <!-- breadcrumb_section - end
-                                                                                                                                                                                                                                   ================================================== -->
+                                                                                                                                                                                                                                       ================================================== -->
 
 
     <!-- electronic_details - start
-                                                                                                                                                                                                                                   ================================================== -->
+                                                                                                                                                                                                                                       ================================================== -->
     <section class="electronic_details clearfix">
         <div class="container maxw_1600">
             <div class="row mb_50 justify-content-lg-between">
@@ -131,6 +131,8 @@
 
                         <span class="item_price mb_15 d-flex align-items-center">
                             <strong id="price">{{ $proDetail->price }} VNĐ</strong>
+
+
 
                         </span>
 
@@ -301,11 +303,11 @@
 
                                     let variantId = selectedVariant ? selectedVariant.id : null;
                                     let quantity = parseInt($('.input_number').val(),
-                                    10); // Chuyển đổi số lượng thành số nguyên
+                                        10); // Chuyển đổi số lượng thành số nguyên
                                     let price = parseFloat($('#price').text().replace('Giá: ', '').replace(' VNĐ',
-                                    '')); // Lấy giá sản phẩm và loại bỏ ký tự không cần thiết
+                                        '')); // Lấy giá sản phẩm và loại bỏ ký tự không cần thiết
                                     let stock = parseInt($('#stock-status').attr('data-stock'),
-                                    10); // Lấy số lượng tồn kho từ thuộc tính data
+                                        10); // Lấy số lượng tồn kho từ thuộc tính data
 
                                     if (variantId && quantity > 0) {
                                         // Kiểm tra số lượng không vượt quá tồn kho
@@ -427,7 +429,7 @@
             <div class="electronic_details_description">
                 <ul class="nav ul_li bg_electronic_blue" role="tablist">
                     {{-- <li>
-                        <a  data-toggle="tab" href="#accesories_tab">Accesories</a>
+                        <a class="active" data-toggle="tab" href="#accesories_tab">Accesories</a>
                     </li> --}}
                     <li>
                         <a class="active" data-toggle="tab" href="#description_tab">Description</a>
@@ -439,175 +441,130 @@
                         <a data-toggle="tab" href="#reviews_tab">Reviews</a>
                     </li>
                 </ul>
-
-                <!-- Tab panes -->
                 <div class="tab-content">
-                    {{-- <div id="accesories_tab" class="tab-pane active">
-                        <h4 class="title_text mb_15">Perfectly Done</h4>
-                        <p class="mb_30">
-                            Praesent ornare, ex a interdum consectetur, lectus diam sodales elit, vitae egestas est enim
-                            ornare nisl. Nullam in lectus nec sem semper viverra. In lobortis egestas massa. Nam nec massa
-                            nisi. Suspendisse potenti. Quisque suscipit vulputate dui quis volutpat. Ut id elit facilisis,
-                            feugiat est in, tempus lacus. Ut ultrices dictum metus, a ultricies ex vulputate ac. Ut id
-                            cursus tellus, non tempor quam. Morbi porta diam nisi, id finibus nunc tincidunt eu.
-                        </p>
-                        <div class="row mb_15 justify-content-lg-between">
-                            <div class="col-lg-6">
-                                <div class="description_image mb_30">
-                                    <img src="{{ asset('assets/images/details/electronic/img_06.jpg') }}"
-                                        alt="image_not_found">
-                                </div>
-                            </div>
+                    <!-- Tab panes -->
 
-                            <div class="col-lg-6">
-                                <div class="description_content">
-                                    <h4 class="title_text mb_15">Wireless</h4>
-                                    <p class="mb_30">
-                                        Fusce vitae nibh mi. Integer posuere, libero et ullamcorper facilisis, enim eros
-                                        tincidunt orci, eget vestibulum sapien nisi ut leo. Cras finibus vel est ut mollis.
-                                    </p>
 
-                                    <h4 class="title_text mb_15">Fresh Design</h4>
-                                    <p class="mb_30">
-                                        Integer bibendum aliquet ipsum, in ultrices enim sodales sed. Quisque ut urna vitae
-                                        lacus laoreet malesuada eu at massa. Pellentesque nibh augue, pellentesque nec
-                                        dictum vel, pretium a arcu. Duis eu urna suscipit, lobortis elit quis, ullamcorper
-                                        massa.
-                                    </p>
-
-                                    <h4 class="title_text mb_15">Fabolous Sound</h4>
-                                    <p class="mb_30">
-                                        Cras rutrum, nibh a sodales accumsan, elit sapien ultrices sapien, eget semper
-                                        lectus ex congue elit. Nullam dui elit, fermentum a varius at, iaculis non dolor. In
-                                        hac habitasse platea dictumst.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="description_image mb_30">
-                            <img src="{{ asset('assets/images/details/electronic/img_07.jpg') }}" alt="image_not_found">
-                            <a class="play_btn" href="http://www.youtube.com/watch?v=0O2aH4XLbto">
-                                <i class="fas fa-play"></i>
-                            </a>
-                        </div>
-                        <h4 class="title_text mb_15">Perfectly Done</h4>
-                        <p class="mb_30">
-                            Praesent ornare, ex a interdum consectetur, lectus diam sodales elit, vitae egestas est enim
-                            ornare nisl. Nullam in lectus nec sem semper viverra. In lobortis egestas massa. Nam nec massa
-                            nisi. Suspendisse potenti. Quisque suscipit vulputate dui quis volutpat. Ut id elit facilisis,
-                            feugiat est in, tempus lacus. Ut ultrices dictum metus, a ultricies ex vulputate ac. Ut id
-                            cursus tellus, non tempor quam. Morbi porta diam nisi, id finibus nunc tincidunt eu.
-                        </p>
-                    </div> --}}
-
-                    <div id="description_tab" class="tab-pane fade">
-                        {{ $proDetail->description }}
+                    <div id="description_tab" class="tab-pane fade active">
+                        {{ $proDetail->product->description }}
                     </div>
-
-                    {{-- <div id="specification_tab" class="tab-pane fade">
-                        <h4 class="title_text mb_15">Perfectly Done</h4>
-                        <p class="mb_30">
-                            Praesent ornare, ex a interdum consectetur, lectus diam sodales elit, vitae egestas est enim
-                            ornare nisl. Nullam in lectus nec sem semper viverra. In lobortis egestas massa. Nam nec massa
-                            nisi. Suspendisse potenti. Quisque suscipit vulputate dui quis volutpat. Ut id elit facilisis,
-                            feugiat est in, tempus lacus. Ut ultrices dictum metus, a ultricies ex vulputate ac. Ut id
-                            cursus tellus, non tempor quam. Morbi porta diam nisi, id finibus nunc tincidunt eu.
-                        </p>
-                        <div class="row mb_15 justify-content-lg-between">
-                            <div class="col-lg-6">
-                                <div class="description_content">
-                                    <h4 class="title_text mb_15">Wireless</h4>
-                                    <p class="mb_30">
-                                        Fusce vitae nibh mi. Integer posuere, libero et ullamcorper facilisis, enim eros
-                                        tincidunt orci, eget vestibulum sapien nisi ut leo. Cras finibus vel est ut mollis.
-                                    </p>
-
-                                    <h4 class="title_text mb_15">Fresh Design</h4>
-                                    <p class="mb_30">
-                                        Integer bibendum aliquet ipsum, in ultrices enim sodales sed. Quisque ut urna vitae
-                                        lacus laoreet malesuada eu at massa. Pellentesque nibh augue, pellentesque nec
-                                        dictum vel, pretium a arcu. Duis eu urna suscipit, lobortis elit quis, ullamcorper
-                                        massa.
-                                    </p>
-
-                                    <h4 class="title_text mb_15">Fabolous Sound</h4>
-                                    <p class="mb_30">
-                                        Cras rutrum, nibh a sodales accumsan, elit sapien ultrices sapien, eget semper
-                                        lectus ex congue elit. Nullam dui elit, fermentum a varius at, iaculis non dolor. In
-                                        hac habitasse platea dictumst.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div> --}}
-
                     <div id="reviews_tab" class="tab-pane fade">
-
-                        <div>
-                            <h2>Reviews</h2>
-                            @foreach ($reviews as $review)
-                                <div class="review">
-                                    <h3>{{ $review->subject }}</h3>
-                                    <p>{{ $review->comment }}</p>
-                                    <small>by {{ $review->user->name }} on
-                                        {{ $review->created_at->format('d-m-Y') }}</small>
-                                    <hr>
-                                </div>
-                            @endforeach
-                        </div>
-                        <form action="{{ route('reviews.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $proDetail->product->id }}">
-
-
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <div class="form_item">
-                                        <input type="text" name="name" placeholder="Your Name"
-                                            value="{{ old('name') }}" required>
-                                        @error('name')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
+                        @if (Auth::user())
+                            <div>
+                                <h2>Reviews</h2>
+                                @foreach ($reviews as $review)
+                                    <div class="review">
+                                        <h3>{{ $review->subject }}</h3>
+                                        <p>{{ $review->comment }}</p>
+                                        <small>by {{ $review->user->name }} on
+                                            {{ $review->created_at->format('d-m-Y') }}</small>
+                                        <hr>
                                     </div>
-                                </div>
+                                @endforeach
+                            </div>
+                            <form action="{{ route('reviews.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $proDetail->product->id }}">
 
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <div class="form_item">
-                                        <input type="email" name="email" placeholder="Your Email"
-                                            value="{{ old('email') }}" required>
-                                        @error('email')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <div class="form_item">
+                                            <input type="text" name="name" placeholder="Your Name"
+                                                value="{{ Auth::user()->name }}" required>
+                                            @error('name')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
+
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <div class="form_item">
+                                            <input type="email" name="email" placeholder="Your Email"
+                                                value="{{ Auth::user()->email }}" required>
+                                            @error('email')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+
                                 </div>
 
-
-                            </div>
-
-                            <div class="form_item">
-                                <textarea name="message" placeholder="Your Message" required>{{ old('message') }}</textarea>
-                                @error('message')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <button type="submit" class="custom_btn bg_default_red text-uppercase">Submit Review</button>
-                        </form>
+                                <div class="form_item">
+                                    <textarea name="message" placeholder="Your Message" required>{{ old('message') }}</textarea>
+                                    @error('message')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <button type="submit" class="custom_btn bg_default_red text-uppercase">Submit
+                                    Review</button>
+                            </form>
                     </div>
+                @else
+                    <h1>Bạn hãy đăng nhập để bình luận</h1>
+                    @endif
                 </div>
+
+
             </div>
         </div>
+        <script>
+            $(document).ready(function() {
+                $('#review-form').on('submit', function(e) {
+                    e.preventDefault(); // Ngăn không gửi form theo cách truyền thống
+
+                    // Xóa các lỗi cũ
+                    $('.text-danger').text('');
+
+                    // Lấy dữ liệu từ form
+                    let formData = $(this).serialize();
+
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'POST',
+                        data: formData,
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Thành công',
+                                    text: response.success,
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    // Xóa form sau khi gửi thành công
+                                    $('#review-form')[0].reset();
+                                    // Bạn có thể cập nhật danh sách bình luận ở đây nếu cần
+                                });
+                            } else if (response.errors) {
+                                // Hiển thị lỗi
+                                for (let [key, value] of Object.entries(response.errors)) {
+                                    $(`#${key}-error`).text(value);
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', xhr.responseText);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: 'Đã xảy ra lỗi khi gửi bình luận. Vui lòng thử lại sau.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
     </section>
     <!-- electronic_details - end
-                                                                                                                                                                                                                                   ================================================== -->
+                                                                                                                                                                                                                                       ================================================== -->
 
 
     <!-- product_section - start
-                                                                                                                                                                                                                                   ================================================== -->
+                                                                                                                                                                                                                                       ================================================== -->
 
     <!-- product_section - end
-                                                                                                                                                                                                                                   ================================================== -->
+                                                                                                                                                                                                                                       ================================================== -->
 
 
 @endsection

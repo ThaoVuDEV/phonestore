@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderCompleted;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Discount;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
@@ -12,6 +14,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class CartController extends Controller
@@ -203,8 +206,12 @@ class CartController extends Controller
     }
     public function checkout(Request $request)
     {
+
         $user = Auth::user();
         $cartItems = json_decode($request->input('cart'), true);
+        $cart_total = $request->input('cart_total');
+        $discount = $request->input('cart_discount');
+        $code_id = $request->input('discount_id');
 
         if (!$cartItems) {
             return redirect()->back()->with('error', 'Dữ liệu giỏ hàng không hợp lệ!');
@@ -213,10 +220,11 @@ class CartController extends Controller
         $totalAmount = 0;
 
         foreach ($cartItems as $item) {
-           
+
 
             $subtotal = $item['quantity'] * $item['price'];
             $totalAmount += $subtotal;
+
 
             // Update or create cart item
             $cartItem = Cart::where('user_id', $user->id)
@@ -239,13 +247,20 @@ class CartController extends Controller
             }
         }
 
-        // Fetch updated cart items
+
         $cartItems = Cart::where('user_id', $user->id)
             ->with(['variant.product'])
             ->get();
 
-        // Redirect to checkout page
-        return view('client.cart.checkout', compact('user', 'cartItems', 'totalAmount'));
+        session()->put('order_info', [
+            'cartItems' => $cartItems,
+            'totalAmount' => $totalAmount,
+            'cart_total' => $cart_total,
+            'discount' => $discount,
+            'code_id' => $code_id,
+        ]);
+
+        return view('client.cart.checkout', compact('user', 'cartItems', 'totalAmount', 'cart_total', 'discount',));
     }
     public function removeFromCart($id)
     {
@@ -255,7 +270,7 @@ class CartController extends Controller
             ->first();
 
         if ($cartItem) {
-            $cartItem->delete();
+            $cartItem->forceDelete();
             return response()->json(['success' => true]);
         }
 
@@ -263,15 +278,45 @@ class CartController extends Controller
     }
     public function orderCompleted()
     {
+        // Kiểm tra nếu không có session 'order_completed'
         if (!session('order_completed')) {
             return redirect()->route('home')->with('error', 'Bạn không thể truy cập trang này.');
         }
 
+        // Lấy thông tin đơn hàng từ session
+        $orderInfo = session('order_info');
+        if (!$orderInfo) {
+            return redirect()->route('home')->with('error', 'Thông tin đơn hàng không có.');
+        }
+
+        // Xóa thông tin giảm giá khỏi session
+        session()->forget('coupon');
+
+        // Lấy thông tin người dùng
+        $user = Auth::user();
+        $cartItems = $orderInfo['cartItems'];
+        $totalAmount = $orderInfo['totalAmount'];
+        $cart_total = $orderInfo['cart_total'];
+        $discount = $orderInfo['discount'];
+        $code_id = $orderInfo['code_id'];
+       
+        if ($code_id) {
+            $discountModel = new Discount();
+            $discountModel->applyCouponed($code_id);
+        }
+
+        // Gửi email thông báo hoàn tất đơn hàng
+        try {
+            Mail::to($user->email)->send(new OrderCompleted($user, $cartItems, $totalAmount, $cart_total, $discount));
+        } catch (\Exception $e) {
+           
+            return redirect()->route('home')->with('error', 'Có lỗi xảy ra khi gửi email xác nhận.');
+        }
+
+        session()->forget('order_info');
         session()->forget('order_completed');
 
-        return response()->view('client.cart.ordercompleted')
-            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', '0');
+
+        return view('client.cart.ordercompleted', compact('user'));
     }
 }

@@ -34,7 +34,7 @@
                                             </div>
                                             <h3 class="item_title mb-0">
                                                 <a
-                                                    href="#!">{{ $item->variant->product->name }}{{ $item->variant->capacity->value }}</a>
+                                                    href="{{route('getProDetail',['id'=>$item->variant->id])}}">{{ $item->variant->product->name }}{{ $item->variant->capacity->value }}</a>
                                             </h3>
                                             <div class="item_image">
                                                 <img src="{{ asset('storage/uploads/' . basename($firstImage)) }}"
@@ -84,7 +84,7 @@
                                         <li>
                                             <div class="electronic_product_item">
                                                 <ul class="product_label ul_li clearfix">
-                                                    <li>-$30</li>
+                                                    
                                                 </ul>
                                                 <div class="item_image">
                                                     <img src="{{ asset('storage/products/' . basename($item->product->image)) }}"
@@ -94,9 +94,9 @@
                                                     <span class="item_name">{{ $item->product->name }}</span>
                                                     <h3 class="item_title">
                                                         <a
-                                                            href="{{ route('getProList', ['id' => $item->product->id]) }}">{{ $item->product->name }}</a>
+                                                            href="{{ route('getProDetail1', ['id' => $item->product->id]) }}">{{ $item->product->name }}</a>
                                                     </h3>
-                                                    <span class="item_price">$685.00</span>
+                                                    {{-- <span class="item_price">{{ number_format($item->product->variant->first()->price, 2) }}</span> --}}
                                                 </div>
                                             </div>
                                         </li>
@@ -113,7 +113,7 @@
                                         <li>
                                             <div class="electronic_product_item">
                                                 <ul class="product_label ul_li clearfix">
-                                                    <li>-$30</li>
+                                                    
                                                 </ul>
                                                 <div class="item_image">
                                                     <img src="{{ asset('storage/products/' . basename($item->product->image)) }}"
@@ -122,7 +122,7 @@
                                                 <div class="item_content">
                                                     <span class="item_name">{{ $item->product->category->name }}</span>
                                                     <h3 class="item_title">
-                                                        <a href="#!">{{ $item->product->name }}</a>
+                                                        <a href="{{route('getProDetail1',['id'=>$item->product->id])}}">{{ $item->product->name }}</a>
                                                     </h3>
                                                     <span class="item_price">{{ $item->special_price }}</span>
                                                 </div>

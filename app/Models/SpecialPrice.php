@@ -31,4 +31,8 @@ class SpecialPrice extends Model
     {
         return $this->with('product')->paginate(8);
     }
+    public function getProByID($id){
+        $specialPrice = SpecialPrice::where('product_id',$id)->get();
+        return $specialPrice;
+    }
 }

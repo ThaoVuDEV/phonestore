@@ -31,9 +31,9 @@ class Product extends Model
         return $this->hasManyThrough(Capacity::class, ProductVariant::class, 'product_id', 'id', 'id', 'capacity_id');
     }
     public function category()
-    {
-        return $this->belongsTo(Category::class, 'category_id');
-    }
+{
+    return $this->belongsTo(Category::class);
+}
 
     public function getTotalValue()
     {

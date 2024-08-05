@@ -159,16 +159,14 @@
 									@foreach ($proList as $item)
 									<li>
 										<div class="electronic_product_item">
-											<ul class="product_label ul_li clearfix">
-												<li>-$30</li>
-											</ul>
+											
 											<div class="item_image">
 												<img src="{{ asset('storage/products/' . basename($item->image)) }}" alt="image_not_found">
 											</div>
 											<div class="item_content">
 												<span class="item_name">Speakers</span>
 												<h3 class="item_title">
-													<a href="{{route('getProDetail',['id'=>$item->id])}}">{{$item->name}}</a>
+													<a href="{{route('getProDetail1',['id'=>$item->id])}}">{{$item->name}}</a>
 												</h3>
 								
 											</div>
@@ -185,16 +183,14 @@
 										@foreach ($proList as $item)
 										<li>
 											<div class="electronic_product_item">
-												<ul class="product_label ul_li clearfix">
-													<li>-$30</li>
-												</ul>
+												
 												<div class="item_image">
 													<img src="{{ asset('storage/products/' . basename($item->image)) }}" alt="image_not_found">
 												</div>
 												<div class="item_content">
 													<span class="item_name">Speakers</span>
 													<h3 class="item_title">
-														<a href="{{route('getProDetail',['id'=>$item->id])}}">{{$item->name}}</a>
+														<a href="{{route('getProDetail1',['id'=>$item->id])}}">{{$item->name}}</a>
 													</h3>
 									
 												</div>

@@ -7,13 +7,7 @@
 	<body>
 
 
-		<!-- backtotop - start -->
-		<div id="thetop"></div>
-		<div class="backtotop bg_default_red">
-			<a href="#" class="scroll">
-				<i class="far fa-arrow-up"></i>
-			</a>
-		</div>
+		
 		<!-- backtotop - end -->
 
 		<!-- preloader - start -->
@@ -48,7 +42,7 @@
 					<div class="row align-items-center">
 						<div class="col-lg-3">
 							<div class="brand_logo">
-								<a class="brand_link" href="index.html">
+								<a class="brand_link" href="{{route('home')}}">
 									<img src="assets/images/logo/logo_27_1x.png" srcset="assets/images/logo/logo_27_2x.png 2x" alt="logo_not_found">
 								</a>
 
@@ -73,7 +67,7 @@
 							<nav class="main_menu clearfix">
 								<ul class="ul_li_center clearfix">
 									<li >
-										<a href="#!">Home</a>
+										<a href="{{route('home')}}">Home</a>
 										
 									</li>
 									<li >
@@ -103,14 +97,7 @@
 		================================================== -->
 		<main>
 
-			<!-- breadcrumb_section - start
-			================================================== -->
-			<section class="breadcrumb_section text-white text-center text-uppercase d-flex align-items-end clearfix" data-background="assets/images/breadcrumb/bg_15.jpg">
-				<div class="overlay" data-bg-color="#1d1d1d"></div>
-				<div class="container">
-					<h1 class="page_title text-white"> đăng nhập</h1>
-				</div>
-			</section>
+			
 			<!-- breadcrumb_section - end
 			================================================== -->
 
@@ -120,51 +107,44 @@
 			<section class="register_section sec_ptb_140 has_overlay parallaxie clearfix" data-background="assets/images/backgrounds/bg_35.jpg">
 				<div class="overlay" data-bg-color="rgba(55, 55, 55, 0.75)"></div>
 				<div class="container">
-					<div class="reg_form_wrap login_form" data-background="assets/images/reg_bg_01.png">
-						<form action="{{route('userLogin')}}" method="POST">
+					<div class="p-5 bg-white rounded shadow-sm">
+						<form action="/update-profile" method="POST" enctype="multipart/form-data">
 							@csrf
-							<div class="reg_form">
-								<h2 class="form_title text-uppercase text-center">Đăng nhập</h2>
-								<!-- Hiển thị thông báo  nếu có -->
-								@if (session('success'))
-								<div class="alert alert-primary">
-									{{ session('success') }}
-								</div>
-								@endif
-								@if (session('error'))
-								<div class="alert alert-danger">
-									{{ session('error') }}
-								</div>
-								@endif
-								<div class="form_item">
-									<input id="email" type="email" name="email" placeholder="username">
-									<label for="email"><i class="fal fa-user"></i></label>
-								</div>
-								<div class="form_item">
-									<input id="password_input" type="password" name="password" placeholder="password">
-									<label for="password_input"><i class="fal fa-unlock-alt"></i></label>
-									
-								</div>
-								
-								<a class="forget_pass text-uppercase mb_30" href="#!">Quên mật khẩu?</a>
-								<button type="submit" class="custom_btn bg_default_red text-uppercase mb_50">Đăng nhập</button>
-
-								{{-- <div class="social_wrap mb_100">
-									<h4 class="small_title_text mb_15 text-center text-uppercase">Or Login With</h4>
-									<ul class="circle_social_links ul_li_center clearfix">
-										<li><a data-bg-color="#3b5998" href="#!"><i class="fab fa-facebook-f"></i></a></li>
-										<li><a data-bg-color="#1da1f2" href="#!"><i class="fab fa-twitter"></i></a></li>
-										<li><a data-bg-color="#ea4335" href="#!"><i class="fab fa-google-plus-g"></i></a></li>
-									</ul>
-								</div> --}}
-
-								<div class="create_account text-center">
-									<h4 class="small_title_text text-center text-uppercase">Bạn chưa có tài khoản</h4>
-									<a class="create_account_btn text-uppercase" href="{{route('user.signup')}}">Đăng ký</a>
-								</div>
+							
+			
+							<!-- Name Section -->
+							<div class="mb-4">
+								<h2 class="h5 mb-2">Name</h2>
+								<input type="text" class="form-control" name="name" value="{{ $user->name }}">
+							</div>
+			
+							<!-- Email Section -->
+							<div class="mb-4">
+								<h2 class="h5 mb-2">Email</h2>
+								<input type="email" class="form-control" name="email" value="{{ $user->email }}">
+							</div>
+			
+							<!-- Phone Section -->
+							<div class="mb-4">
+								<h2 class="h5 mb-2">Phone</h2>
+								<input type="text" class="form-control" name="phone" value="{{ $user->phone }}">
+							</div>
+			
+							<!-- Address Section -->
+							<div class="mb-4">
+								<h2 class="h5 mb-2">Address</h2>
+								<input type="text" class="form-control" name="address" value="{{ $user->address }}">
+							</div>
+			
+							<!-- Save Changes Button -->
+							<div>
+								<button type="submit" class="btn btn-primary">Save Changes</button>
+								<a href="{{route("home")}}" class="btn btn-danger">Cancel</a>
 							</div>
 						</form>
 					</div>
+					<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+					<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 				</div>
 			</section>
 			<!-- register_section - end

@@ -1,41 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-
-    <title>Shop Cart</title>
-    <link rel="shortcut icon" href="assets/images/logo/favourite_icon_01.png">
-
-    <!-- fraimwork - css include -->
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-
-    <!-- icon - css include -->
-    <link rel="stylesheet" type="text/css" href="assets/css/fontawesome.css">
-
-    <!-- animation - css include -->
-    <link rel="stylesheet" type="text/css" href="assets/css/animate.css">
-
-    <!-- nice select - css include -->
-    <link rel="stylesheet" type="text/css" href="assets/css/nice-select.css">
-
-    <!-- carousel - css include -->
-    <link rel="stylesheet" type="text/css" href="assets/css/slick.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/slick-theme.css">
-
-    <!-- popup images & videos - css include -->
-    <link rel="stylesheet" type="text/css" href="assets/css/magnific-popup.css">
-
-    <!-- jquery ui - css include -->
-    <link rel="stylesheet" type="text/css" href="assets/css/jquery-ui.css">
-
-    <!-- custom - css include -->
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
-
-</head>
+@include('client.layouts.head')
 
 
 <body>
@@ -82,7 +48,7 @@
             <div class="container">
                 <h1 class="page_title text-white">Cart Page</h1>
                 <ul class="breadcrumb_nav ul_li_center clearfix">
-                    <li><a href="#!">Home</a></li>
+                    <li><a href="{{ route('home') }}">Home</a></li>
                     <li>Shop</li>
                     <li>Shopping Cart</li>
                 </ul>
@@ -136,7 +102,8 @@
                                     <td>
                                         <span class="price_text"
                                             data-price="{{ $item->variant->price }}">{{ $item->variant->price }}</span>
-                                        <input type="hidden" name="price_text" value="{{ $item->variant->price }}">
+                                        <input type="hidden" name="price_text"
+                                            value="{{ $item->variant->price }} VNĐ">
                                     </td>
                                     <td>
                                         <div class="quantity_input">
@@ -156,6 +123,51 @@
                     </table>
                 </div>
 
+                <div class="coupon_wrap mb_50">
+                    @if (session('status'))
+                        <div class="alert alert-success">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    <!-- Hiển thị thông tin mã giảm giá và giảm giá nếu có -->
+                    @if (session('coupon'))
+                        @php
+                            $coupon = session('coupon');
+                        @endphp
+
+
+                        <p>Giảm giá: {{ $coupon['value'] }}</p>
+                        <input type="hidden" id="discount_type" name="discount_type"
+                            value="{{ $coupon['discount_type'] }}"
+                            data-discount-type="{{ $coupon['discount_type'] }}">
+                        <input type="hidden" id="discount_value" name="discount_value" value="{{ $coupon['value'] }}"
+                            data-discount-value="{{ $coupon['value'] }}">
+                        <input type="hidden" id="discount_id" name="discount_id" value="{{ $coupon['id'] }}">
+                    @endif
+
+                    <div class="row justify-content-lg-between">
+                        <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
+                            <form action="{{ route('applyCoupon') }}" method="POST">
+                                @csrf
+                                <div class="coupon_form">
+                                    <div class="form_item mb-0">
+                                        <input type="text" name="code" class="coupon" placeholder="Coupon Code">
+                                    </div>
+                                    <button type="submit" class="custom_btn bg_danger text-uppercase">Apply
+                                        Coupon</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
 
                 <div class="row justify-content-lg-end">
                     <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
@@ -163,13 +175,24 @@
                             <h3 class="table_title text-center" data-bg-color="#ededed">Cart Total</h3>
                             <ul class="ul_li_block clearfix">
                                 <li><span>Subtotal</span> <span class="cart_subtotal">$197.99</span></li>
+                                <li><span>Discount</span> <span class="cart_discount">$197.99</span>
+                                </li>
 
                                 <li><span>Total</span> <span class="cart_total">$197.99</span></li>
                             </ul>
                             <form id="cartForm" action="{{ route('checkout') }}" method="POST">
                                 @csrf
                                 @method('POST')
+                                @if (session('coupon'))
+                                @php
+                                    $coupon = session('coupon');
+                                @endphp
+                                <input type="hidden" id="discount_id" name="discount_id" value="{{ $coupon['id'] }}">
+                            @endif
                                 <input type="hidden" name="cart" id="cartData">
+                                <input type="hidden" name="cart_subtotal">
+                                <input type="hidden" name="cart_discount">
+                                <input type="hidden" name="cart_total">
                                 <button type="submit" class="custom_btn bg_success">Proceed to Checkout</button>
                             </form>
                         </div>
@@ -190,9 +213,6 @@
                     }
                 }
 
-                // Kiểm tra xem token có được lấy không
-                console.log('CSRF Token:', getCsrfToken());
-
                 function getCartData() {
                     return Array.from(document.querySelectorAll('tr[data-cart-item-id]')).map(row => {
                         return {
@@ -201,18 +221,26 @@
                             quantity: parseInt(row.querySelector('.input_number_new').value) || 1,
                             price: parseFloat(row.querySelector('.price_text').getAttribute('data-price')),
                             total: (parseFloat(row.querySelector('.price_text').getAttribute('data-price')) * (
-                                parseInt(row.querySelector('.input_number_new').value) || 1))
+                                parseInt(row.querySelector('.input_number_new').value) || 1)),
                         }
                     });
                 }
 
-                document.querySelector('#cartForm').addEventListener('submit', function(event) {
-                    const cartData = getCartData();
-                    document.querySelector('#cartData').value = JSON.stringify(cartData);
-                });
-
                 function updateCart() {
                     let subtotal = 0;
+                    let discountValue = 0;
+                    let discountType = ''; // Giá trị sẽ là 'fixed_amount' hoặc 'percentage'
+
+                    // Lấy giá trị giảm giá từ các biến
+                    const discountElement = document.querySelector('input[name="discount_value"]');
+                    const discountTypeElement = document.querySelector('input[name="discount_type"]');
+
+                    if (discountElement) {
+                        discountValue = parseFloat(discountElement.getAttribute('data-discount-value')) || 0;
+                    }
+                    if (discountTypeElement) {
+                        discountType = discountTypeElement.getAttribute('data-discount-type') || '';
+                    }
 
                     document.querySelectorAll('.quantity_input').forEach(inputWrapper => {
                         const input = inputWrapper.querySelector('.input_number_new');
@@ -220,23 +248,54 @@
                         const priceElement = inputWrapper.closest('tr').querySelector('.price_text');
                         const price = parseFloat(priceElement.getAttribute('data-price'));
                         const totalPriceElement = inputWrapper.closest('tr').querySelector('.total_price');
-
                         const totalPrice = price * quantity;
-                        totalPriceElement.textContent = `${totalPrice.toFixed(2)} VNĐ`;
+
+                        totalPriceElement.textContent = `${totalPrice} VNĐ`;
 
                         subtotal += totalPrice;
                     });
 
-                    document.querySelector('.cart_subtotal').textContent = `${subtotal.toFixed(2)} VNĐ`;
-                    document.querySelector('.cart_total').textContent = `${subtotal.toFixed(2)} VNĐ`;
+                    // Tính toán giảm giá
+                    let discount = 0;
+                    if (discountType === 'percentage') {
+                        discount = (subtotal * discountValue) / 100;
+                    } else if (discountType === 'fixed_amount') {
+                        discount = discountValue;
+                    }
+
+                    // Tính tổng sau khi giảm giá
+                    let total = subtotal - discount;
+                    if (total < 0) {
+                        total = 0;
+                    }
+                    // Cập nhật giao diện người dùng
+                    document.querySelector('.cart_subtotal').textContent = `${subtotal} VNĐ`;
+                    document.querySelector('.cart_discount').textContent = `${discount} VNĐ`;
+                    document.querySelector('.cart_total').textContent = `${total} VNĐ`;
+
+
+
+                    // Cập nhật các input ẩn trong form
+                    document.querySelector('input[name="cart_subtotal"]').value = subtotal;
+                    document.querySelector('input[name="cart_discount"]').value = discount;
+                    document.querySelector('input[name="cart_total"]').value = total;
+
                 }
 
+                document.querySelector('#cartForm').addEventListener('submit', function(event) {
+                    updateCart(); // Cập nhật các giá trị trước khi gửi form
+                    const cartData = getCartData();
+                    document.querySelector('#cartData').value = JSON.stringify(cartData);
+                });
+
+                // Lắng nghe sự thay đổi trong input số lượng
                 document.querySelectorAll('.quantity_input .input_number_new').forEach(input => {
                     input.addEventListener('input', function() {
                         updateCart();
                     });
                 });
 
+                // Xử lý nút tăng và giảm số lượng
                 document.querySelectorAll('.input_number_increment_new').forEach(button => {
                     button.addEventListener('click', function() {
                         const input = this.previousElementSibling;
@@ -255,6 +314,7 @@
                     });
                 });
 
+                // Xử lý nút xóa sản phẩm
                 document.querySelectorAll('.remove_btn').forEach(button => {
                     button.addEventListener('click', function() {
                         const row = this.closest('tr');
@@ -263,15 +323,10 @@
                         if (confirm('Are you sure you want to remove this item?')) {
                             fetch(`/cart/remove/${cartItemId}`, {
                                     method: 'DELETE',
-                                    headers: {
-                                        'X-CSRF-TOKEN': document.querySelector(
-                                            'meta[name="csrf-token"]').getAttribute('content')
-                                    }
                                 })
                                 .then(response => response.json())
                                 .then(data => {
                                     if (data.success) {
-                                        row.remove();
                                         updateCart();
                                     } else {
                                         alert('Error removing item.');
@@ -281,6 +336,7 @@
                     });
                 });
 
+                // Cập nhật giỏ hàng khi trang được tải
                 updateCart();
             });
         </script>

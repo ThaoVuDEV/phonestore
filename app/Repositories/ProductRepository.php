@@ -77,26 +77,36 @@ class ProductRepository
     public function productGetById($id)
     {
         return $this->product
-            ->with(['productVariants', 'category']) 
+            ->with(['productVariants', 'category'])
             ->where('products.id', $id)
             ->whereNull('products.deleted_at')
-            ->first(); 
+            ->first();
     }
-     public function loadProByCate(){
+    public function getProductByCate($id)
+    {
+        return $this->product
+            ->with(['productVariants', 'category'])
+            ->whereHas('category', function ($query) use ($id) {
+                $query->where('id', $id)
+                    ->whereNull('deleted_at');
+            })
+            ->get();
+    }
+    public function loadProByCate()
+    {
+    }
+    public function searchByNameAndCategory($name = null, $categoryId = null)
+    {
+        $query = $this->product->with('category')->whereNull('deleted_at');
 
-     }
-     public function searchByNameAndCategory($name = null, $categoryId = null)
-     {
-         $query = $this->product->with('category')->whereNull('deleted_at');
- 
-         if ($name) {
-             $query->where('name', 'like', '%' . $name . '%');
-         }
- 
-         if ($categoryId) {
-             $query->where('category_id', $categoryId);
-         }
- 
-         return $query->get();
-     }
+        if ($name) {
+            $query->where('name', 'like', '%' . $name . '%');
+        }
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        return $query->get();
+    }
 }

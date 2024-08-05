@@ -161,6 +161,7 @@ class ProductController extends Controller
     {
 
         $productDetail = $this->productVariantService->getAllProductVariants($id);
+        
 
         return view('admin.products.list_detail', compact('productDetail'));
     }
@@ -185,7 +186,7 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validate input data
+        
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
@@ -205,7 +206,7 @@ class ProductController extends Controller
             'existing_variant_ids.*' => 'exists:product_variants,id',
         ]);
 
-        // Update product information
+      
         $product = $this->productService->getProductById($id);
         $productData = $request->only(['category_id', 'name', 'description']);
 
@@ -214,7 +215,7 @@ class ProductController extends Controller
             $imageName = uniqid() . '-' . $image->getClientOriginalName();
             $imagePath = $image->storeAs('public/products/', $imageName);
 
-            // Delete old image if present
+          
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
             }
@@ -222,10 +223,10 @@ class ProductController extends Controller
             $productData['image'] = $imagePath;
         }
 
-        // Update product
+       
         $this->productService->updateProduct($product, $productData);
 
-        // Process variant data
+       
         $variantPrices = $request->input('variant_prices', []);
         $variantQuantities = $request->input('variant_quantities', []);
         $variantImages = $request->file('variant_images', []);
@@ -233,12 +234,12 @@ class ProductController extends Controller
         $variantCapacities = $request->input('variant_capacities', []);
         $existingVariantIds = $request->input('variant_ids', []);
 
-        // Update existing variants
+      
         foreach ($existingVariantIds as $index => $variantId) {
             $variant = $this->productVariantService->getProductVariantById($variantId);
 
             if ($variant) {
-                // Process variant images if present
+               
                 $images = $variantImages[$index] ?? [];
                 $imagePaths = [];
                 if (is_array($images)) {
@@ -251,7 +252,7 @@ class ProductController extends Controller
                     }
                 }
 
-                // Ensure prices and quantities are mapped correctly
+                
                 $price = $variantPrices[$variantId] ?? $variant->price;
                 $quantity = $variantQuantities[$variantId] ?? $variant->stock;
 

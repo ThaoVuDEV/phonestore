@@ -59,4 +59,5 @@ class SpecialPriceController extends Controller
         return redirect()->route('special-prices.index')->with('success', 'Special price deleted successfully.');
     }
     
+    
 }
